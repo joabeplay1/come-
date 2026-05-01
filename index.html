@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Come Come SITI WEB</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap');
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#000818; color:#fff; font-family:'Orbitron',sans-serif; display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+    nav { width:100%; display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid rgba(255,204,0,0.2); }
+    .logo { font-size:1.4rem; color:#FFD700; font-weight:900; }
+    canvas { display:block; border:2px solid rgba(51,102,255,0.6); box-shadow:0 0 20px rgba(51,102,255,0.4); border-radius:8px; max-width:100%; }
+    .score-bar { display:flex; gap:32px; padding:10px 20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,204,0,0.3); border-radius:8px; margin:8px 0; }
+    .overlay { position:absolute; inset:0; background:rgba(0,0,17,0.88); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+    button { font-family:'Orbitron',sans-serif; font-weight:700; cursor:pointer; border:none; border-radius:12px; padding:12px 28px; font-size:1rem; transition:all 0.2s; }
+    .btn-primary { background:#FFD700; color:#000; }
+    .btn-primary:hover { background:#FFEE44; transform:scale(1.05); }
+    .btn-outline { background:transparent; border:2px solid rgba(255,204,0,0.5); color:#FFD700; }
+    #game-container { position:relative; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">🟡 COME COME SITI WEB</div>
+  </nav>
+  <div id="score-bar" class="score-bar">
+    <div><div style="font-size:.7rem;color:#888">PONTOS</div><div id="score" style="color:#FFD700;font-weight:700;font-size:1.2rem">0</div></div>
+    <div><div style="font-size:.7rem;color:#888">FASE</div><div id="level" style="font-weight:700">1</div></div>
+    <div><div style="font-size:.7rem;color:#888">VIDAS</div><div id="lives" style="color:#FFD700">● ● ●</div></div>
+  </div>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    <div class="overlay" id="overlay">
+      <div style="font-size:4rem">🟡</div>
+      <div style="font-size:2rem;color:#FFD700;font-weight:900">COME COME</div>
+      <input id="nameInput" placeholder="Seu nome..." style="background:rgba(255,255,255,0.1);border:1px solid #FFD700;color:#fff;font-family:Orbitron,sans-serif;text-align:center;padding:10px 20px;border-radius:8px;font-size:1rem" maxlength="12"/>
+      <button class="btn-primary" id="startBtn" style="font-size:1.2rem;padding:14px 36px">JOGAR!</button>
+    </div>
+  </div>
+  <p style="margin-top:12px;color:#444;font-size:.7rem">Use ← → ↑ ↓ ou WASD para mover</p>
+  <script src="game.js"></script>
+</body>
+</html>
