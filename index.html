@@ -122,7 +122,6 @@
   }
   .action-btn:hover { transform: scale(1.05); }
 </style>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
@@ -133,14 +132,16 @@
     <div class="title">PING ● PONG</div>
     <div class="subtitle">🐱 Neon Edition</div>
 
-    <button class="menu-btn btn-2p" onclick="createOnlineRoom()">
-    <div class="icon">🌐</div>
-    <div><div class="label">CRIAR SALA</div><div class="desc">Gera um código</div></div>
-</button>
-<button class="menu-btn btn-2p" onclick="joinOnlineRoom()">
-    <div class="icon">🔑</div>
-    <div><div class="label">ENTRAR</div><div class="desc">Digitar código</div></div>
-</button>
+    <div id="mode-btns">
+      <button class="menu-btn btn-1p" onclick="showDiff()">
+        <div class="icon">👤</div>
+        <div><div class="label">1 JOGADOR</div><div class="desc">Desafie a IA</div></div>
+      </button>
+      <button class="menu-btn btn-2p" onclick="startGame('2p','medium')">
+        <div class="icon">👥</div>
+        <div><div class="label">2 JOGADORES</div><div class="desc">Jogue com um amigo</div></div>
+      </button>
+    </div>
 
     <div id="diff-step">
       <div class="diff-label">Escolha a dificuldade</div>
@@ -329,32 +330,6 @@ function resetBall(scorer) {
 
 // ── UPDATE ────────────────────────────────────────────────────────
 function update() {
- function update() {
-  if (!gs || gs.gameOver) return;
-
-  // --- COLE ESTE BLOCO AQUI ---
-  if (currentRoom) {
-      // Envia sua posição para o outro jogador
-      let myY = isP1 ? gs.p1.y : gs.p2.y;
-      socket.emit('paddleMove', { roomId: currentRoom, y: myY });
-
-      // Se você for o P1 (dono da sala), você manda a posição da bola
-      if (isP1) {
-          socket.emit('ballSync', { 
-              roomId: currentRoom, 
-              x: gs.ball.x, 
-              y: gs.ball.y,
-              p1Score: gs.p1.score,
-              p2Score: gs.p2.score
-          });
-      }
-  }
-  // --- FIM DO BLOCO MULTIPLAYER ---
-
-  const {W, H, paddleW, paddleH, ballR, ball, p1, p2, paddleSpeed, margin, cfg} = gs;
-  
-  // O restante do código (Scan & Pulse, Field particles, etc) continua igual abaixo...
-  gs.scanY = (gs.scanY + 1.2) % H;
   if (!gs || gs.gameOver) return;
   const {W, H, paddleW, paddleH, ballR, ball, p1, p2, paddleSpeed, margin, cfg} = gs;
 
@@ -728,62 +703,6 @@ function quitGame() {
   document.getElementById('menu').style.display = 'flex';
   hideDiff(); document.getElementById('mode-btns').style.display = 'flex';
 }
-const socket = io();
-let currentRoom = null;
-let isP1 = false;
-
-function createOnlineRoom() {
-    socket.emit('createRoom');
-}
-
-function joinOnlineRoom() {
-    const id = prompt("Digite o código da sala:");
-    if(id) socket.emit('joinRoom', id.toUpperCase());
-}
-
-socket.on('roomCreated', (id) => {
-    currentRoom = id;
-    isP1 = true;
-    alert("Sala Criada! Código: " + id + "\nEspere o oponente.");
-});
-
-socket.on('playerJoined', (data) => {
-    currentRoom = data.roomId;
-    startGame('2p', 'medium');
-});
-
-// Dentro da sua função update() existente, adicione:
-if (currentRoom) {
-    // Envia sua posição
-    let myY = isP1 ? gs.p1.y : gs.p2.y;
-    socket.emit('paddleMove', { roomId: currentRoom, y: myY });
-
-    // Se for o P1, ele controla a bola para os dois
-    if (isP1) {
-        socket.emit('ballSync', { 
-            roomId: currentRoom, 
-            x: gs.ball.x, 
-            y: gs.ball.y,
-            p1Score: gs.p1.score,
-            p2Score: gs.p2.score
-        });
-    }
-}
-
-// Recebe dados do oponente
-socket.on('opponentMove', (y) => {
-    if (isP1) gs.p2.y = y; else gs.p1.y = y;
-});
-
-socket.on('ballUpdate', (data) => {
-    if (!isP1) {
-        gs.ball.x = data.x;
-        gs.ball.y = data.y;
-        gs.p1.score = data.p1Score;
-        gs.p2.score = data.p2Score;
-        updateScore();
-    }
-});
 </script>
 </body>
 </html>
