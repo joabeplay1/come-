@@ -6,9 +6,26 @@
     <title>Domino Play Premium</title>
     <link rel="stylesheet" href="./src/css/theme.css">
     <style>
-        #app-container { width: 100vw; height: 100vh; position: relative; }
-        .screen { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .screen.active { display: flex; }
+        #app-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; background: #060b14; }
+        
+        /* Força todas as telas a começarem escondidas, exceto a que tiver a classe .active */
+        .screen { 
+            display: none !important; 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            top: 0; 
+            left: 0; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 5;
+        }
+        
+        /* Tela ativa se torna um flexbox visível */
+        .screen.active { 
+            display: flex !important; 
+        }
         
         #game-board {
             width: 85%; height: 60%;
@@ -42,6 +59,7 @@
             position: absolute; top: 15px; right: 15px;
             padding: 8px 16px; border-radius: 20px;
             font-weight: bold; text-transform: uppercase;
+            z-index: 10;
         }
         .my-turn { background: rgba(57, 255, 20, 0.2); border: 1px solid var(--neon-green); color: var(--neon-green); }
         .other-turn { background: rgba(255, 0, 0, 0.2); border: 1px solid #ff0055; color: #ff0055; }
@@ -52,27 +70,27 @@
     <div id="app-container">
         <canvas id="bg-particles" style="position:absolute; top:0; left:0; pointer-events:none; z-index:1;"></canvas>
 
-        <div id="screen-login" class="screen active" style="z-index: 2;">
-            <div class="glass-panel" style="padding: 40px; text-align: center;">
-                <h1 style="color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,240,255,0.5);">DOMINÓ PLAY</h1>
-                <p style="color: var(--text-secondary);">A experiência Premium do Dominó Brasileiro</p>
-                <input type="text" id="username" placeholder="Digite seu Nome" style="padding: 12px; margin: 20px 0; width: 80%; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: #fff; text-align:center;">
+        <div id="screen-login" class="screen active">
+            <div class="glass-panel" style="padding: 40px; text-align: center; width: 300px;">
+                <h1 style="color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,240,255,0.5); margin-bottom: 5px;">DOMINÓ PLAY</h1>
+                <p style="color: var(--text-secondary); margin-top: 0; font-size: 14px;">Experiência Premium Brasileira</p>
+                <input type="text" id="username" placeholder="Digite seu Nome" style="padding: 12px; margin: 20px 0; width: 90%; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: #fff; text-align:center; font-size: 16px;">
                 <br>
-                <button id="btn-login" class="btn-premium">Entrar no Lobby</button>
+                <button id="btn-login" class="btn-premium" style="width: 100%;">Entrar no Lobby</button>
             </div>
         </div>
 
-        <div id="screen-lobby" class="screen" style="z-index: 2;">
-            <div class="glass-panel" style="padding: 40px; width: 320px; display:flex; flex-direction:column; gap:20px;">
+        <div id="screen-lobby" class="screen">
+            <div class="glass-panel" style="padding: 40px; width: 300px; display:flex; flex-direction:column; gap:20px;">
                 <h2 style="text-align: center; margin:0;">Salas Online</h2>
                 <button id="btn-create-room" class="btn-premium green">Criar Sala Privada</button>
                 <div style="border-top: 1px solid var(--glass-border);"></div>
-                <input type="text" id="room-code-input" placeholder="CÓDIGO DA SALA" style="padding: 12px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; text-align: center; font-weight: bold;">
+                <input type="text" id="room-code-input" placeholder="CÓDIGO DA SALA" style="padding: 12px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; text-align: center; font-weight: bold; font-size: 16px;">
                 <button id="btn-join-room" class="btn-premium">Entrar com Código</button>
             </div>
         </div>
 
-        <div id="screen-game" class="screen" style="z-index: 2;">
+        <div id="screen-game" class="screen">
             <div id="turn-badge" class="turn-indicator other-turn">Aguardando...</div>
             <div id="game-board"></div>
             <div id="player-hand"></div>
@@ -88,6 +106,7 @@
         let localPlayer = { id: null, name: "" };
         let currentRoomCode = null;
 
+        // Gerenciador de Partículas de Fundo
         const canvas = document.getElementById('bg-particles');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -107,35 +126,53 @@
         }
         drawParticles();
 
+        // Função de alternar telas corrigida para resetar estados do flexbox
         function changeScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active');
+            });
             document.getElementById(screenId).classList.add('active');
         }
 
+        // Evento de Login
         document.getElementById('btn-login').addEventListener('click', async () => {
             const nameInput = document.getElementById('username').value.trim();
             if(!nameInput) return alert("Por favor, digite seu nome de jogador.");
             
-            localPlayer.name = nameInput;
-            const cred = await signInAnonymously(auth);
-            localPlayer.id = cred.user.uid;
-
-            changeScreen('screen-lobby');
+            try {
+                localPlayer.name = nameInput;
+                const cred = await signInAnonymously(auth);
+                localPlayer.id = cred.user.uid;
+                changeScreen('screen-lobby');
+            } catch (error) {
+                console.error("Erro na autenticação:", error);
+                alert("Erro ao conectar com o servidor. Verifique o console.");
+            }
         });
 
+        // Criar Sala
         document.getElementById('btn-create-room').addEventListener('click', async () => {
-            currentRoomCode = await RoomManager.createRoom(localPlayer.id, localPlayer.name);
-            alert(`Sala criada! Compartilhe o código: ${currentRoomCode}`);
-            startGameSession(currentRoomCode);
+            try {
+                currentRoomCode = await RoomManager.createRoom(localPlayer.id, localPlayer.name);
+                alert(`Sala criada! Compartilhe o código com seu amigo: ${currentRoomCode}`);
+                startGameSession(currentRoomCode);
+            } catch (error) {
+                alert("Erro ao criar sala. Verifique o Realtime Database.");
+            }
         });
 
+        // Entrar na Sala
         document.getElementById('btn-join-room').addEventListener('click', async () => {
             const code = document.getElementById('room-code-input').value.toUpperCase().trim();
             if(!code) return alert("Insira o código gerado pelo seu amigo.");
             
-            await RoomManager.joinRoom(code, localPlayer.id, localPlayer.name);
-            currentRoomCode = code;
-            startGameSession(currentRoomCode);
+            try {
+                await RoomManager.joinRoom(code, localPlayer.id, localPlayer.name);
+                currentRoomCode = code;
+                startGameSession(currentRoomCode);
+            } catch (error) {
+                alert("Sala não encontrada ou código inválido.");
+            }
         });
 
         function startGameSession(code) {
