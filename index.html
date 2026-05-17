@@ -4,154 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Domino Play Premium</title>
-    <style>
-        :root {
-            --bg-main: #060b14;
-            --table-gradient: radial-gradient(circle, #0a251c 0%, #040e0a 100%);
-            --neon-blue: #00f0ff;
-            --neon-green: #39ff14;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #8a99ad;
-        }
-
-        body {
-            margin: 0; padding: 0;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        #app-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-        
-        .screen { 
-            display: none !important; 
-            position: absolute; 
-            width: 100%; height: 100%; 
-            top: 0; left: 0; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 5;
-        }
-        
-        .screen.active { display: flex !important; }
-        
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
-            border: none; color: white;
-            padding: 14px 28px; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 1px;
-            border-radius: 8px; cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-        }
-
-        .btn-premium:active { transform: scale(0.95); box-shadow: 0 0 5px rgba(0, 240, 255, 0.8); }
-        .btn-premium.green { background: linear-gradient(135deg, #39ff14 0%, #00aa22 100%); box-shadow: 0 0 15px rgba(57, 255, 20, 0.4); }
-
-        /* MESA PREMIUM CENTRALIZADA */
-        #game-board {
-            width: 90%; height: 55%;
-            background: var(--table-gradient);
-            border: 12px solid #1a110b;
-            border-radius: 24px; position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.6);
-            display: flex; justify-content: center; align-items: center;
-            overflow: x: auto; overflow-y: hidden;
-            padding: 20px; box-sizing: border-box;
-        }
-
-        #board-center {
-            display: flex; align-items: center; justify-content: center;
-            gap: 6px; position: relative; min-width: min-content;
-            transition: all 0.3s ease;
-        }
-        
-        /* CONTAINER DA MÃO DO JOGADOR - CENTRALIZADO E SEPARADO */
-        #player-hand {
-            position: absolute; bottom: 25px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 10px; padding: 12px 24px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 16px; border: 1px solid var(--glass-border);
-            max-width: 95vw; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
-
-        /* DESIGN PREMIUM ORIGINAL DE PEDRA REAL DE DOMINÓ (MARFIM) */
-        .domino-piece {
-            width: 52px; height: 100px;
-            background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
-            border-radius: 8px; display: flex; flex-direction: column;
-            justify-content: space-between; align-items: center;
-            cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.8);
-            transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), box-shadow 0.2s ease;
-            position: relative; box-sizing: border-box; padding: 6px;
-            flex-shrink: 0; border: 1px solid #d4d4d4;
-        }
-        
-        /* Linha divisória de metal central */
-        .domino-piece::after {
-            content: ''; position: absolute; width: 88%; height: 2px;
-            background: linear-gradient(90deg, #ccc, #666, #ccc); top: 50%; transform: translateY(-50%);
-            left: 6%; z-index: 2;
-        }
-        
-        .domino-piece:hover { transform: translateY(-15px) scale(1.04); box-shadow: 0 12px 24px rgba(0,0,0,0.6), 0 0 15px var(--neon-blue); }
-        
-        /* ADAPTAÇÃO PARA PEÇAS HORIZONTAIS NA MESA */
-        .domino-piece.horizontal {
-            width: 100px; height: 52px; flex-direction: row;
-        }
-        .domino-piece.horizontal::after {
-            width: 2px; height: 88%; top: 6%; left: 50%; transform: translateX(-50%);
-        }
-
-        /* CORPO DAS METADES DA PEDRA (GRID DE PONTOS) */
-        .domino-half {
-            width: 40px; height: 40px; display: grid;
-            grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
-            gap: 2px; padding: 2px; box-sizing: border-box; position: relative;
-        }
-
-        /* PONTOS PRETOS (BOLINHAS) PREMIUM */
-        .dot {
-            background: #111111; border-radius: 50%; width: 8px; height: 8px;
-            margin: auto; box-shadow: inset 0 1px 1px rgba(0,0,0,0.6);
-            opacity: 0; /* Controlado dinamicamente via JS */
-        }
-        .dot.active { opacity: 1; }
-
-        .turn-indicator {
-            position: absolute; top: 15px; right: 15px;
-            padding: 8px 16px; border-radius: 20px;
-            font-weight: bold; text-transform: uppercase; z-index: 10;
-        }
-        .my-turn { background: rgba(57, 255, 20, 0.2); border: 1px solid var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px rgba(57, 255, 20, 0.3); }
-        .other-turn { background: rgba(255, 0, 0, 0.2); border: 1px solid #ff0055; color: #ff0055; }
-
-        /* Ajustes de responsividade para telas menores (Celulares) */
-        @media (max-width: 768px) {
-            .domino-piece { width: 42px; height: 80px; padding: 4px; }
-            .domino-piece.horizontal { width: 80px; height: 42px; }
-            .domino-half { width: 32px; height: 32px; }
-            .dot { width: 6px; height: 6px; }
-            #game-board { height: 45%; width: 95%; }
-        }
-    </style>
+    <link rel="stylesheet" href="./src/css/theme.css">
 </head>
 <body>
 
@@ -193,7 +46,7 @@
         let localPlayer = { id: null, name: "" };
         let currentRoomCode = null;
 
-        // Fundo com Partículas Animadas
+        // Fundo com Partículas de Cassino Animadas
         const canvas = document.getElementById('bg-particles');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -218,7 +71,7 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Login Sincronizado
+        // Login Seguro Instantâneo
         document.getElementById('btn-login').addEventListener('click', async () => {
             const nameInput = document.getElementById('username').value.trim();
             if(!nameInput) return alert("Por favor, digite seu nome de jogador.");
@@ -232,8 +85,7 @@
             }
         });
 
-        // MAPEAMENTO E RENDERIZADOR MATEMÁTICO DE PONTOS (BOLINHAS REALISTAS)
-        // Mapeia os índices corretos em um Grid 3x3 para posicionar os pontos do dominó tradicional
+        // MAPEAMENTO E RENDERIZADOR MATEMÁTICO DE PONTOS (BOLINHAS REAIS)
         const DOT_MAPS = {
             0: [],
             1: [4],
@@ -262,7 +114,7 @@
             return el;
         }
 
-        // Geração do Baralho de 28 Peças
+        // Geração do Baralho Oficial de 28 Peças
         function criarBaralhoCompleto() {
             let pecas = [];
             let id = 0;
@@ -278,7 +130,7 @@
             return pecas;
         }
 
-        // Criar Sala Privada
+        // Criar Sala Privada com 7 Peças
         document.getElementById('btn-create-room').addEventListener('click', async () => {
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             const pool = criarBaralhoCompleto();
@@ -296,13 +148,13 @@
             try {
                 await set(ref(db, `rooms/${code}`), state);
                 currentRoomCode = code;
-                alert(`Sala Criada com Sucesso! Código: ${currentRoomCode}`);
+                alert(`Sala Criada! Código: ${currentRoomCode}`);
                 changeScreen('screen-game');
                 listenToRoom(currentRoomCode);
             } catch (e) { alert("Erro ao criar sala."); }
         });
 
-        // Entrar com Código
+        // Entrar com Código e Receber as 7 Peças Restantes
         document.getElementById('btn-join-room').addEventListener('click', async () => {
             const code = document.getElementById('room-code-input').value.toUpperCase().trim();
             if(!code) return alert("Insira o código da sala.");
@@ -330,14 +182,13 @@
             }, { onlyOnce: true });
         });
 
-        // Ouvinte de Mudanças do Firebase em Tempo Real
         function listenToRoom(code) {
             onValue(ref(db, `rooms/${code}`), (snapshot) => {
                 if (snapshot.exists()) renderGame(snapshot.val());
             });
         }
 
-        // Sintetizador de Voz Feminina Nativa Sem Atrasos
+        // SÍNTESE DE VOZ FEMININA BRASILEIRA SEM ATRASOS
         function narrarPecaOficial(left, right) {
             if (!('speechSynthesis' in window)) return;
             let frase = "";
@@ -360,7 +211,7 @@
             window.speechSynthesis.speak(fala);
         }
 
-        // MOTOR DE RENDERIZAÇÃO E LOGICA DE ENCAIXE DO DOMINÓ REAL
+        // MOTOR DE ATUALIZAÇÃO E ENCAIXE EM TEMPO REAL
         function renderGame(room) {
             const badge = document.getElementById('turn-badge');
             const isMyTurn = room.turn === localPlayer.id;
@@ -374,32 +225,30 @@
                 badge.className = "turn-indicator other-turn";
             }
 
-            // CORREÇÃO DO TABULEIRO: Desenha as peças perfeitamente com bolinhas pretas
+            // Renderiza o tabuleiro com as pedras de marfim
             const boardCenter = document.getElementById('board-center');
             boardCenter.innerHTML = "";
             
             const played = room.board.played_pieces || [];
             played.forEach((piece) => {
                 const isCarroça = piece.l === piece.r;
-                // Aplica classe horizontal automática para deitar a pedra se for ponta comum
                 const pecaMesa = criarElementoDomino(piece.l, piece.r, isCarroça ? '' : 'horizontal');
-                boardCenter.appendChild(pecasMesa);
+                boardCenter.appendChild(pecaMesa);
             });
 
-            // Dispara a áudio-narração síncrona se uma nova jogada for registrada
+            // Dispara áudio síncrono para todos os dispositivos conectados
             if(played.length > 0 && room.last_played_id !== window.lastPlayedTracked) {
                 const ultima = played[played.length - 1];
                 narrarPecaOficial(ultima.l, ultima.r);
                 window.lastPlayedTracked = room.last_played_id;
             }
 
-            // RENDERIZAR PEÇAS NA MÃO DO JOGADOR LOCAL COM DESIGN PREMIUM COMPLETO
+            // Renderiza as peças na mão do jogador
             const handContainer = document.getElementById('player-hand');
             handContainer.innerHTML = "";
             
             const minhaMao = room.hands?.[localPlayer.id] || [];
 
-            // Validação inteligente de fechamento de jogadas
             let temJogadaValida = false;
             minhaMao.forEach(p => {
                 if (room.board.left_edge === null || p.l === room.board.left_edge || p.r === room.board.left_edge || p.l === room.board.right_edge || p.r === room.board.right_edge) {
@@ -407,16 +256,15 @@
                 }
             });
 
-            // Passa a vez automaticamente em caso de trava na mão do jogador
+            // Regra Oficial Brasileira: Passa a vez se estiver travado
             if (room.status === "playing" && isMyTurn && minhaMao.length > 0 && !temJogadaValida) {
                 setTimeout(async () => {
                     const proxTurno = Object.keys(room.players).find(id => id !== localPlayer.id);
                     await update(ref(db, `rooms/${currentRoomCode}`), { turn: proxTurno });
-                    alert("Você não possui peças compatíveis. Passando a vez!");
+                    alert("Você não tem peças jogáveis! Vez passada automaticamente.");
                 }, 1600);
             }
 
-            // Insere cada elemento de marfim na mão do usuário
             minhaMao.forEach((p, index) => {
                 const elPeca = criarElementoDomino(p.l, p.r);
                 
@@ -428,7 +276,7 @@
                     let novaPeca = { ...p };
                     let encaixou = false;
 
-                    // Mecânica de Encaixe Tradicional e Rotação Matemática de Lados
+                    // Mecânica Inteligente de Encaixe e Inversão Automática de Lados
                     if (lMesa === null) {
                         lMesa = p.l; rMesa = p.r; encaixou = true;
                         room.board.played_pieces = [novaPeca];
@@ -436,19 +284,19 @@
                         lMesa = p.l; encaixou = true;
                         room.board.played_pieces.unshift(novaPeca);
                     } else if (p.l === lMesa) {
-                        novaPeca.l = p.r; novaPeca.r = p.l; // Inverte os lados visualmente
+                        novaPeca.l = p.r; novaPeca.r = p.l;
                         lMesa = p.r; encaixou = true;
                         room.board.played_pieces.unshift(novaPeca);
                     } else if (p.l === rMesa) {
                         rMesa = p.r; encaixou = true;
                         room.board.played_pieces.push(novaPeca);
                     } else if (p.r === rMesa) {
-                        novaPeca.l = p.r; novaPeca.r = p.l; // Inverte os lados visualmente
+                        novaPeca.l = p.r; novaPeca.r = p.l;
                         rMesa = p.l; encaixou = true;
                         room.board.played_pieces.push(novaPeca);
                     }
 
-                    if (!encaixou) return alert("Jogada Inválida! Escolha uma peça compatível com as pontas da mesa.");
+                    if (!encaixou) return alert("Jogada Inválida! Escolha uma peça compatível.");
 
                     const novaMao = [...minhaMao];
                     novaMao.splice(index, 1);
@@ -462,7 +310,7 @@
 
                     if (novaMao.length === 0) {
                         updates[`/status`] = "finished";
-                        alert("Sensacional! Você bateu todas as peças e venceu o jogo!");
+                        alert("Você bateu e venceu a partida!");
                     } else {
                         updates[`/turn`] = Object.keys(room.players).find(id => id !== localPlayer.id);
                     }
@@ -472,7 +320,6 @@
                 handContainer.appendChild(elPeca);
             });
         }
-        
         if ('speechSynthesis' in window) { window.speechSynthesis.getVoices(); }
     </script>
 </body>
