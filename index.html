@@ -5,16 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Domino Aposta — Suíte Premium</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase App e Realtime Database (SDKs via CDN v10+) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        // O script.js principal importará as configurações configuradas em firebase-config.js
-    </script>
 </head>
 <body>
 
-    <!-- Tela de Carregamento / Overlay de Som -->
     <div id="loading-screen" class="overlay">
         <div class="loader-content">
             <h2>DOMINO APOSTA</h2>
@@ -23,7 +16,6 @@
         </div>
     </div>
 
-    <!-- Tela Inicial / Lobby -->
     <div id="lobby-screen" class="screen">
         <div class="glass-card">
             <h1 class="logo">DOMINO <span>APOSTA</span></h1>
@@ -45,7 +37,6 @@
         </div>
     </div>
 
-    <!-- Tela de Espera -->
     <div id="waiting-screen" class="screen hidden">
         <div class="glass-card waiting-card">
             <h2>Mesa Criada com Sucesso!</h2>
@@ -59,9 +50,7 @@
         </div>
     </div>
 
-    <!-- Mesa de Jogo -->
     <div id="game-screen" class="screen hidden">
-        <!-- Topbar / Placar -->
         <header class="game-header">
             <div class="player-score status-left">
                 <span class="player-name-tag" id="score-p1-name">Jogador 1</span>
@@ -79,15 +68,12 @@
             </div>
         </header>
 
-        <!-- Tabuleiro Principal -->
         <main class="domino-table">
             <div class="table-felt">
-                <!-- Área de renderização dinâmica da corrente de dominós -->
                 <div id="domino-chain" class="chain-container"></div>
             </div>
         </main>
 
-        <!-- Painel Inferior do Jogador Local -->
         <footer class="player-panel">
             <div class="opponent-hand-status">
                 <p>Adversário possui: <span id="opponent-count">7</span> peças</p>
@@ -98,9 +84,7 @@
                 <button id="btn-pass" class="btn-action hidden">Passar Vez</button>
             </div>
 
-            <div id="my-hand" class="hand-container">
-                <!-- As peças do jogador serão injetadas aqui -->
-            </div>
+            <div id="my-hand" class="hand-container"></div>
         </footer>
     </div>
 
