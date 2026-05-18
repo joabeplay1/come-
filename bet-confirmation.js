@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, runTransaction, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Configuração padrão do seu Firebase
 const firebaseConfig = {
@@ -18,7 +18,7 @@ const db = getDatabase(app);
 
 let activeRoomCode = null;
 let currentMode = "1x1";
-let myLocalRole = null;
+let myLocalRole = "p1"; // Define p1 por padrão no Lobby para liberar os testes locais
 let isLobbyTestingMode = true;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,8 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const bodyContent = document.getElementById('bet-panel-content');
     const minimizeBtn = document.getElementById('btn-minimize-bet-panel');
 
-    // Inicializa exibição limpa no Lobby
-    document.getElementById('bet-central-panel').classList.remove('hidden');
+    // Força o painel a ficar visível e público de cara na tela inicial (Lobby)
+    const centralPanel = document.getElementById('bet-central-panel');
+    if (centralPanel) centralPanel.classList.remove('hidden');
+    
+    // Inicializa a grade pública exibindo as cadeiras prontas para os players
     renderDynamicPlayersGrid(null); 
 
     if (headerToggle && bodyContent) {
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (minimizeBtn) minimizeBtn.onclick = togglePanel;
     }
 
-    // Controle de troca de Modos de Jogo com exibição de Divisão de Prêmio
+    // Controle de troca de Modos de Jogo com exibição da divisão de prêmios
     const modeSelect = document.getElementById('select-match-mode');
     if (modeSelect) {
         modeSelect.onchange = (e) => {
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeRoomCode && myLocalRole === 'p1') {
                 set(ref(db, `rooms/${activeRoomCode}/matchMode`), currentMode);
             } else if (isLobbyTestingMode) {
-                renderDynamicPlayersGrid(null); 
+                renderDynamicPlayersGrid(null); // Atualiza os slots públicos do lobby na hora
             }
         };
     }
@@ -60,23 +63,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmBtn = document.getElementById('btn-confirm-my-bet');
     if (confirmBtn) confirmBtn.onclick = handleMyBetConfirmation;
 
-    // Vincula clique na lista lateral de monitoramento para convidar jogadores automaticamente
+    // Ativa o vínculo para adicionar jogadores clicando na barra de monitoramento
     injectSidebarInviteMechanic();
 
     setInterval(detectActiveGameRoom, 1500);
 });
 
-// Mecanismo de Convite: Vincula os itens da barra lateral direita para puxar o player para a mesa
+// Mecanismo de Convite: Vincula a barra lateral direita de monitoramento para puxar o player para as cadeiras do meio
 function injectSidebarInviteMechanic() {
     const sidebarList = document.getElementById('online-players-list');
     if (!sidebarList) return;
 
     sidebarList.addEventListener('click', (e) => {
         const clickedItem = e.target.closest('.player-item');
-        if (!clickedItem || !activeRoomCode || myLocalRole !== 'p1') return;
+        if (!clickedItem) return;
 
         const invitedName = clickedItem.querySelector('.p-name')?.innerText.replace('(Você)', '').trim();
-        if (invitedName) {
+        if (!invitedName) return;
+
+        if (isLobbyTestingMode) {
+            alert(`Para convidar ${invitedName}, crie uma Mesa Premium ou entre em um código de sala primeiro.`);
+            return;
+        }
+
+        if (myLocalRole === 'p1') {
             invitePlayerToFirebaseRoom(invitedName);
         }
     });
@@ -88,8 +98,15 @@ function invitePlayerToFirebaseRoom(playerName) {
     
     runTransaction(roomRef, (room) => {
         if (!room) return room;
-        // Procura o primeiro slot vago de p1 a p4 para sentar o jogador convidado
+        
+        // Verifica se o jogador já está inserido em alguma cadeira para evitar duplicados
         for (let i = 1; i <= 4; i++) {
+            if (room[`p${i}`] && room[`p${i}`].name === playerName) return;
+        }
+
+        // Procura o primeiro slot livre de p1 a p4 para sentar o jogador convidado
+        const maxSlots = (currentMode === "1x1") ? 2 : 4;
+        for (let i = 1; i <= maxSlots; i++) {
             if (!room[`p${i}`] || !room[`p${i}`].name) {
                 room[`p${i}`] = {
                     name: playerName,
@@ -137,7 +154,6 @@ function detectActiveGameRoom() {
 function syncBetPanelState(room) {
     const currentName = document.getElementById('player-name')?.value.trim();
     
-    // Varredura de assentos atômica para identificar o player local
     myLocalRole = null;
     for (let i = 1; i <= 4; i++) {
         if (room[`p${i}`] && room[`p${i}`].name === currentName) {
@@ -150,7 +166,7 @@ function syncBetPanelState(room) {
     const modeSelect = document.getElementById('select-match-mode');
     if (modeSelect) {
         modeSelect.value = currentMode;
-        modeSelect.disabled = (myLocalRole !== 'p1'); // Apenas o líder da mesa escolhe o modo
+        modeSelect.disabled = (myLocalRole !== 'p1'); 
     }
 
     updatePayoutInstructionBanner();
@@ -177,23 +193,23 @@ function renderDynamicPlayersGrid(room) {
         const card = document.createElement('div');
         card.className = "bet-player-card";
 
-        // MODO LOBBY: Simulação visual interativa para testes de desenvolvimento antes de iniciar o game
+        // MODO LOBBY PÚBLICO: Abre as cadeiras vinculadas à sua carteira lateral para testes imediatos
         if (isLobbyTestingMode) {
             if (i === 1) {
                 totalPlayersConnected++;
                 totalAccumulatedPrize += currentBetNum;
                 card.innerHTML = `
                     <div class="p-meta-data">
-                        <span class="p-grid-name">👤 ${mockName} (Você)</span>
-                        <span class="p-grid-bet">Retirado: R$ ${currentBetNum.toFixed(2).replace('.', ',')}</span>
-                        <span class="p-grid-status" style="color:#ef4444">Falta Confirmar</span>
+                        <span class="p-grid-name">👤 Slot 1: ${mockName} (Você)</span>
+                        <span class="p-grid-bet">Valor da Chave: R$ ${currentBetNum.toFixed(2).replace('.', ',')}</span>
+                        <span class="p-grid-status" style="color:#ef4444">Aguardando Confirmação</span>
                     </div>
                     <div class="status-indicator-icon">❌</div>
                 `;
             } else {
                 card.innerHTML = `
                     <div class="p-meta-data">
-                        <span class="p-grid-name" style="color:#555">Aguardando Conexão...</span>
+                        <span class="p-grid-name" style="color:#8a9a92">👤 Slot ${i}: Aguardando Jogador...</span>
                         <span class="p-grid-bet">R$ 0,00</span>
                     </div>
                     <div class="status-indicator-icon">⏳</div>
@@ -203,7 +219,7 @@ function renderDynamicPlayersGrid(room) {
             continue;
         }
 
-        // MODO DE JOGO REAL: Sincronizado dinamicamente via Firebase Room
+        // MODO DE JOGO REAL SINCRONIZADO: Mapeia as 4 cadeiras reais do Firebase Room (p1, p2, p3, p4)
         const player = room ? room[`p${i}`] : null;
 
         if (player && player.name) {
@@ -218,23 +234,22 @@ function renderDynamicPlayersGrid(room) {
             if (!isConfirmed) pendingConfirmations++;
             if (isConfirmed) card.classList.add('confirmed');
 
-            // Exibe Foto/Iniciais do nome e metadados financeiros de auditoria de saldo retirado
             card.innerHTML = `
                 <div class="p-meta-data">
-                    <span class="p-grid-name">👤 ${player.name} ${player.name === mockName ? '(Você)' : ''}</span>
+                    <span class="p-grid-name">👤 Slot ${i}: ${player.name} ${player.name === mockName ? '(Você)' : ''}</span>
                     <span class="p-grid-bet">Retirado da Carteira: R$ ${betVal.toFixed(2).replace('.', ',')}</span>
                     <span class="p-grid-status" style="color:${isConfirmed ? '#22c55e' : '#eab308'}">
                         ${isConfirmed ? 'Aposta Confirmada' : 'Pendente de Confirmação'}
                     </span>
                 </div>
-                <div class="status-indicator-icon" style="animation: pulse 1.5s infinite alternate;">${isConfirmed ? '✅' : '❌'}</div>
+                <div class="status-indicator-icon">${isConfirmed ? '✅' : '❌'}</div>
             `;
         } else {
             allBetsEqual = false;
             card.innerHTML = `
                 <div class="p-meta-data">
-                    <span class="p-grid-name" style="color:#6b7280">Vago (Aguardando Jogador)</span>
-                    <span class="p-grid-bet">Valor: R$ 0,00</span>
+                    <span class="p-grid-name" style="color:#6b7280">👤 Slot ${i}: Vago</span>
+                    <span class="p-grid-bet">Aguardando entrada de jogador...</span>
                 </div>
                 <div class="status-indicator-icon">⏳</div>
             `;
@@ -242,41 +257,44 @@ function renderDynamicPlayersGrid(room) {
         container.appendChild(card);
     }
 
-    // Atualiza o painel central do prêmio acumulado em tempo real
+    // Sincroniza e atualiza o Prêmio Total Acumulado no display central da aba do meio
     const prizeDisplay = document.getElementById('bet-prize-total-val');
     if (prizeDisplay) {
         const finalPrizeValue = isLobbyTestingMode ? (slotsCount * currentBetNum) : totalAccumulatedPrize;
         prizeDisplay.innerText = `PRÊMIO TOTAL: R$ ${finalPrizeValue.toFixed(2).replace('.', ',')}`;
     }
 
-    // BANNER DE REGRAS E BLOQUEIOS AUTOMÁTICOS DE INCOMPATIBILIDADE
+    // BANNER DE REGRAS E BLOQUEIOS MECÂNICOS DE VALIDAÇÃO
     const banner = document.getElementById('bet-panel-validation-banner');
     const mainStartBtn = document.getElementById('btn-create-room');
 
     if (isLobbyTestingMode) {
-        if (banner) banner.innerText = "Abra a sua carteira lateral (💰) para sincronizar o valor do seu lance.";
+        if (banner) {
+            banner.className = "bet-banner-status bet-banner-error";
+            banner.innerText = "Painel Público Ativo! Modifique o valor na sua carteira lateral (💰) para espelhar e alterar o prêmio aqui.";
+        }
         return;
     }
 
     if (totalPlayersConnected < slotsCount) {
         banner.className = "bet-banner-status bet-banner-error";
-        banner.innerText = `Mesa incompatível: Aguardando entrada de todos os ${slotsCount} jogadores na aposta...`;
+        banner.innerText = `Aguardando entrada de todos os ${slotsCount} jogadores na mesa para liberar as confirmações...`;
         if (mainStartBtn) mainStartBtn.disabled = true;
     } else if (!allBetsEqual) {
         banner.className = "bet-banner-status bet-banner-error";
-        banner.innerText = "Incompatibilidade de Aposta: Os jogadores precisam definir o mesmo valor na carteira para liberar a mesa.";
+        banner.innerText = "Incompatibilidade de Aposta: Os jogadores precisam definir exatamente o mesmo valor na carteira para liberar a mesa.";
         if (mainStartBtn) mainStartBtn.disabled = true;
     } else if (pendingConfirmations > 0) {
         banner.className = "bet-banner-status bet-banner-error";
-        banner.innerText = `Valores compatíveis (R$ ${referenceBet?.toFixed(2)})! Aguardando a confirmação manual de ${pendingConfirmations} jogadores...`;
+        banner.innerText = `Apostas compatíveis! Falta a confirmação manual de ${pendingConfirmations} jogadores.`;
         if (mainStartBtn) mainStartBtn.disabled = true;
     } else {
         banner.className = "bet-banner-status bet-banner-success";
-        banner.innerText = "✅ Perfeito! Todos os jogadores casaram o mesmo valor e confirmaram. Partida liberada.";
+        banner.innerText = "✅ Excelente! Todos os jogadores confirmaram os fundos. Partida liberada para o Start.";
         if (mainStartBtn) mainStartBtn.disabled = false;
     }
 
-    // Trata bloqueio do botão de ação local
+    // Trata desabilitação do botão de confirmação individual local
     const myBtn = document.getElementById('btn-confirm-my-bet');
     if (myBtn && myLocalRole && room) {
         const iHaveConfirmed = room[myLocalRole]?.betConfirmed;
@@ -286,19 +304,20 @@ function renderDynamicPlayersGrid(room) {
 }
 
 function handleMyBetConfirmation() {
+    const currentBetString = document.getElementById('wallet-current-bet')?.innerText || "R$ 20,00";
+    const betAmount = parseFloat(currentBetString.replace('R$', '').replace(',', '.').trim());
+
     if (isLobbyTestingMode) {
-        // Simulação rápida para conferência visual se o usuário clicar sem sala no Lobby
+        // Mock de verificação imediata para testes visuais rápidos no Lobby público
         const firstCheck = document.querySelector('.bet-player-card .status-indicator-icon');
         if(firstCheck) firstCheck.innerText = "✅";
         const firstStatusText = document.querySelector('.bet-player-card .p-grid-status');
         if(firstStatusText) { firstStatusText.innerText = "Aposta Confirmada"; firstStatusText.style.color = "#22c55e"; }
-        return alert("Simulação de confirmação concluída com sucesso no Lobby!");
+        alert(`Aposta de R$ ${betAmount.toFixed(2)} confirmada e deduzida no ambiente de testes públicos do Lobby!`);
+        return;
     }
 
     if (!activeRoomCode || !myLocalRole) return;
-
-    const currentBetString = document.getElementById('wallet-current-bet')?.innerText || "R$ 20,00";
-    const betAmount = parseFloat(currentBetString.replace('R$', '').replace(',', '.').trim());
 
     const currentName = document.getElementById('player-name')?.value.trim();
     const myFinanceId = btoa(currentName).replace(/=/g, "");
