@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Configuração oficial do seu Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCZ4rOliexofYP8vyRLzUeX3mf5uXG6WRM",
     authDomain: "aposta-96213.firebaseapp.com",
@@ -33,6 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('player-name')?.addEventListener('blur', (e) => {
         if(e.target.value.trim()) initUserFinanceNode(e.target.value.trim());
     });
+
+    // GARANTIA DE CLIQUE LIVRE: Força o botão da carteira a ficar clicável por cima de qualquer outra camada
+    const trigger = document.getElementById('wallet-menu-trigger');
+    if (trigger) {
+        trigger.style.pointerEvents = 'auto';
+        trigger.style.zIndex = '99999';
+    }
 });
 
 function setupInterfaceTriggers() {
@@ -50,18 +58,21 @@ function setupInterfaceTriggers() {
         document.getElementById('btn-bet-increase').onclick = () => changeLocalBet(5.00);
     }
 
-    // CORREÇÃO DO CLIQUE DA CARTEIRA: Abre e fecha perfeitamente
+    // CORREÇÃO DO CLIQUE: Abre e fecha a carteira perfeitamente sem travar
     if (trigger && sidebar) {
         trigger.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
             sidebar.classList.toggle('hidden');
+            
+            // Garante que o banco de dados carregue o saldo atualizado ao abrir
+            const currentName = document.getElementById('player-name')?.value.trim() || "Joabe Play";
+            if (typeof initUserFinanceNode === "function") {
+                initUserFinanceNode(currentName);
+            }
         };
     }
 
-    if (minimizeBtn) {
-        minimizeBtn.onclick = (e) => {
-            e.preventDefault();
+    if (minimizeBtn && sidebar) {
+        minimizeBtn.onclick = () => {
             sidebar.classList.add('hidden');
         };
     }
