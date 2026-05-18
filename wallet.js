@@ -17,20 +17,19 @@ const db = getDatabase(app);
 
 let userFinanceId = null;
 let currentRoomCode = null;
-let localBetValue = 1.00;
+let localBetValue = 20.00; // Iniciando com o valor padrão do painel central
 let localWalletBalance = 0.00;
 let lastWithdrawTime = 0;
-let localPlayerRole = null; 
+let localPlayerRole = "p1"; 
 let prizeClaimedForRound = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     setupInterfaceTriggers();
     
-    // Força a inicialização da carteira no login para permitir cliques imediatos
+    // Força identificação imediata para liberar o banco de dados
     const currentName = document.getElementById('player-name')?.value.trim() || "Joabe Play";
     initUserFinanceNode(currentName);
     
-    // Sincroniza se o usuário alterar o nome na tela central
     document.getElementById('player-name')?.addEventListener('blur', (e) => {
         if(e.target.value.trim()) initUserFinanceNode(e.target.value.trim());
     });
@@ -43,21 +42,30 @@ function setupInterfaceTriggers() {
     const depositBtn = document.getElementById('btn-wallet-deposit-pix');
     const withdrawBtn = document.getElementById('btn-wallet-withdraw');
 
+    // Cliques de controle do valor de aposta
     if (document.getElementById('btn-bet-decrease')) {
-        document.getElementById('btn-bet-decrease').onclick = () => changeLocalBet(-0.50);
+        document.getElementById('btn-bet-decrease').onclick = () => changeLocalBet(-5.00);
     }
     if (document.getElementById('btn-bet-increase')) {
-        document.getElementById('btn-bet-increase').onclick = () => changeLocalBet(0.50);
+        document.getElementById('btn-bet-increase').onclick = () => changeLocalBet(5.00);
     }
 
+    // CORREÇÃO DO CLIQUE DA CARTEIRA: Abre e fecha perfeitamente
     if (trigger && sidebar) {
         trigger.onclick = (e) => {
+            e.preventDefault();
             e.stopPropagation();
             sidebar.classList.toggle('hidden');
         };
     }
 
-    if (minimizeBtn) minimizeBtn.onclick = () => sidebar.classList.add('hidden');
+    if (minimizeBtn) {
+        minimizeBtn.onclick = (e) => {
+            e.preventDefault();
+            sidebar.classList.add('hidden');
+        };
+    }
+
     if (depositBtn) depositBtn.onclick = handlePixDepositMock;
     if (withdrawBtn) withdrawBtn.onclick = handleWithdrawalRequest;
 
@@ -74,7 +82,7 @@ function initUserFinanceNode(name) {
     onValue(financeRef, (snapshot) => {
         let data = snapshot.val();
         if (!data) {
-            data = { name: name, available: 130.00, locked: 0.00, lastDeposit: 20.00, lastWithdraw: 0.00, withdrawStatus: "Nenhum" };
+            data = { name: name, available: 150.00, locked: 0.00, lastDeposit: 20.00, lastWithdraw: 0.00, withdrawStatus: "Nenhum" };
             set(financeRef, data);
         }
         localWalletBalance = data.available;
@@ -90,13 +98,29 @@ function updateWalletUI(data) {
     document.getElementById('wallet-withdrawal-status').innerText = `Status Saque: ${data.withdrawStatus}`;
 }
 
+// API INTEGRADA: Altera o valor na carteira e joga direto para a tela do meio (Aba Central)
 function changeLocalBet(step) {
-    if (localBetValue + step < 0.50) return;
+    if (localBetValue + step < 1.00) return;
     localBetValue += step;
+    
+    // Atualiza o texto na carteira lateral
     document.getElementById('wallet-current-bet').innerText = `R$ ${localBetValue.toFixed(2).replace('.', ',')}`;
     
-    if (currentRoomCode && localPlayerRole) {
-        set(ref(db, `rooms/${currentRoomCode}/${localPlayerRole}/betIntent`), localBetValue);
+    // Ponte de API: Altera em tempo real o Firebase da sala e a interface provisória do Lobby
+    if (activeRoomCode && localPlayerRole) {
+        set(ref(db, `rooms/${activeRoomCode}/${localPlayerRole}/betIntent`), localBetValue);
+    } else {
+        // Se estiver no lobby sem sala, força a atualização visual imediata no painel central
+        const myPrizeText = document.getElementById('bet-prize-total-val');
+        if (myPrizeText) {
+            const slotsCount = (document.getElementById('select-match-mode')?.value === '1x1') ? 2 : 4;
+            myPrizeText.innerText = `PRÊMIO TOTAL: R$ ${(slotsCount * localBetValue).toFixed(2).replace('.', ',')}`;
+        }
+        // Atualiza o texto do primeiro jogador no grid simulado do meio
+        const firstPlayerBetGrid = document.querySelector('.bet-player-card .p-grid-bet');
+        if (firstPlayerBetGrid) {
+            firstPlayerBetGrid.innerText = `Aposta: R$ ${localBetValue.toFixed(2).replace('.', ',')}`;
+        }
     }
 }
 
@@ -105,13 +129,7 @@ function syncMatchApostasAndWinner() {
     if (!roomIdElement) return;
 
     const code = roomIdElement.innerText.replace('#', '').trim();
-    if (!code || code === "000000") return; // Mantém passivo até entrar na sala
-
-    if (!localPlayerRole) {
-        const p1Name = document.getElementById('score-p1-name')?.innerText;
-        const currentName = document.getElementById('player-name')?.value.trim();
-        localPlayerRole = (p1Name === currentName) ? 'p1' : 'p2';
-    }
+    if (!code || code === "000000") return;
 
     if (currentRoomCode !== code) {
         currentRoomCode = code;
@@ -121,8 +139,8 @@ function syncMatchApostasAndWinner() {
             const room = snapshot.val();
             if (!room) return;
 
-            const b1 = room.p1?.betIntent || 1.00;
-            const b2 = room.p2?.betIntent || 1.00;
+            const b1 = room.p1?.betIntent || 20.00;
+            const b2 = room.p2?.betIntent || 20.00;
             const totalPrize = b1 + b2;
 
             document.getElementById('wallet-match-bet-val').innerText = `R$ ${b1.toFixed(2).replace('.', ',')}`;
@@ -134,7 +152,8 @@ function syncMatchApostasAndWinner() {
             if ((p1HandCount === 0 || p2HandCount === 0) && !prizeClaimedForRound && room.chain && room.chain.length > 0) {
                 const winnerRole = (p1HandCount === 0) ? 'p1' : 'p2';
                 prizeClaimedForRound = true;
-                if (localPlayerRole === winnerRole) {
+                const currentName = document.getElementById('player-name')?.value.trim();
+                if (room[winnerRole]?.name === currentName) {
                     executePrizePayoutTransaction(totalPrize);
                 }
             }
