@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, push, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Configuração oficial do seu Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCZ4rOliexofYP8vyRLzUeX3mf5uXG6WRM",
     authDomain: "aposta-96213.firebaseapp.com",
@@ -33,6 +34,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-close-chat').onclick = closePrivateChat;
     document.getElementById('btn-send-message').onclick = sendPrivateMessage;
     document.getElementById('select-my-status').onchange = (e) => updateMyStatus(e.target.value);
+    
+    // Inicialização dos botões de minimizar/expandir a janela flutuante
+    const chatCard = document.getElementById('draggable-chat-card');
+    const minimizeBtn = document.getElementById('btn-minimize-chat');
+    
+    if (minimizeBtn && chatCard) {
+        minimizeBtn.onclick = (e) => {
+            e.stopPropagation();
+            chatCard.classList.toggle('minimized');
+            minimizeBtn.innerText = chatCard.classList.contains('minimized') ? '🗖' : '—';
+        };
+    }
+
+    // Ativação do motor de arraste omnidirecional na barra de título do chat
+    makeElementDraggable(chatCard, document.getElementById('chat-drag-handle'));
     
     // Rotina de varredura e limpeza automática cíclica (Roda localmente para economizar processamento)
     setInterval(performAutoGarbageCollection, 5000);
@@ -101,7 +117,7 @@ function renderOnlinePlayers(playersObj) {
 
 // Lógica de Abertura do Chat Privado de Comunicação
 function openPrivateChat(targetId, targetName) {
-    // Cria um ID único determinístico para a conversa baseado nos dois IDs (ordem alfabética)
+    // Cria um ID único determinístico para a conversa baseado nos dos dois IDs (ordem alfabética)
     currentChatRoomId = myLobbyId < targetId ? `${myLobbyId}_${targetId}` : `${targetId}_${myLobbyId}`;
     
     document.getElementById('chat-target-name').innerText = `Conversa com ${targetName}`;
@@ -188,4 +204,73 @@ function performAutoGarbageCollection() {
             }
         });
     }, { onlyOnce: true });
+}
+
+// ==========================================================================
+// MOTOR MATEMÁTICO DE ARRASTE (DRAG & DROP) PARA PC E CELULARES TOUCH
+// ==========================================================================
+function makeElementDraggable(elmnt, dragHandle) {
+    if (!elmnt) return;
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    
+    if (dragHandle) {
+        dragHandle.onmousedown = dragMouseDown;
+        dragHandle.ontouchstart = dragMouseDown;
+    } else {
+        elmnt.onmousedown = dragMouseDown;
+        elmnt.ontouchstart = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+            e.preventDefault();
+        }
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+        
+        pos3 = clientX;
+        pos4 = clientY;
+        
+        if (e.type.includes('touch')) {
+            document.ontouchend = closeDragElement;
+            document.ontouchmove = elementDrag;
+        } else {
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+        pos1 = pos3 - clientX;
+        pos2 = pos4 - clientY;
+        pos3 = clientX;
+        pos4 = clientY;
+        
+        let newTop = elmnt.offsetTop - pos2;
+        let newLeft = elmnt.offsetLeft - pos1;
+
+        // Margens de segurança para travar a janela dentro dos limites visíveis da tela
+        if (newTop < 0) newTop = 0;
+        if (newLeft < 0) newLeft = 0;
+        if (newTop > window.innerHeight - elmnt.clientHeight) newTop = window.innerHeight - elmnt.clientHeight;
+        if (newLeft > window.innerWidth - elmnt.clientWidth) newLeft = window.innerWidth - elmnt.clientWidth;
+
+        elmnt.style.top = newTop + "px";
+        elmnt.style.left = newLeft + "px";
+        elmnt.style.bottom = "auto"; // Desativa ancoragem fixa padrão após mover
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        document.ontouchend = null;
+        document.ontouchmove = null;
+    }
 }
