@@ -17,16 +17,16 @@ const db = getDatabase(app);
 
 let activeRoomCode = null;
 let currentMode = "1x1";
-let myLocalRole = "p1"; // Define p1 por padrão no Lobby para liberar os testes da aba
+let myLocalRole = "p1"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const headerToggle = document.getElementById('bet-panel-toggle');
     const bodyContent = document.getElementById('bet-panel-content');
     const minimizeBtn = document.getElementById('btn-minimize-bet-panel');
 
-    // EXIBE MANDATORIAMENTE A ABA CENTRAL NO LOBBY PARA TESTE VISUAL
+    // EXIBE MANDATORIAMENTE A ABA CENTRAL NO LOBBY PARA TESTE VISUAL IMEDIATO
     document.getElementById('bet-central-panel').classList.remove('hidden');
-    renderMockPlayersGrid(); // Renderiza dados de demonstração iniciais imediatamente
+    renderMockPlayersGrid(); 
 
     if (headerToggle && bodyContent) {
         const togglePanel = (e) => {
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeRoomCode) {
                 set(ref(db, `rooms/${activeRoomCode}/matchMode`), currentMode);
             } else {
-                renderMockPlayersGrid(); // Atualiza a visualização do mock no lobby
+                renderMockPlayersGrid(); 
             }
         };
     }
@@ -68,7 +68,7 @@ function detectActiveGameRoom() {
     if (!roomIdElement) return;
 
     const code = roomIdElement.innerText.replace('#', '').trim();
-    if (!code || code === "000000") return; // Mantém no modo de demonstração do lobby
+    if (!code || code === "000000") return; 
 
     if (activeRoomCode !== code) {
         activeRoomCode = code;
@@ -101,12 +101,16 @@ function syncBetPanelState(room) {
     renderPlayersGrid(room);
 }
 
-// Renderizador de Demonstração (Ativo no Lobby para você visualizar as mudanças de modo imediatamente)
+// LÊ E PEGA O VALOR DO INPUT DA CARTEIRA EM TEMPO REAL NO LOBBY
 function renderMockPlayersGrid() {
     const container = document.getElementById('bet-grid-players-container');
     container.innerHTML = '';
     const slotsCount = (currentMode === '1x1') ? 2 : 4;
     const mockName = document.getElementById('player-name')?.value.trim() || "Joabe Play";
+
+    // Captura dinamicamente o valor que está selecionado na sua carteira lateral
+    const currentWalletBetStr = document.getElementById('wallet-current-bet')?.innerText || "R$ 20,00";
+    const currentBetNum = parseFloat(currentWalletBetStr.replace('R$', '').replace(',', '.').trim());
 
     for (let i = 1; i <= slotsCount; i++) {
         const card = document.createElement('div');
@@ -116,7 +120,7 @@ function renderMockPlayersGrid() {
             card.innerHTML = `
                 <div class="p-meta-data">
                     <span class="p-grid-name">${mockName} (Você)</span>
-                    <span class="p-grid-bet">Aposta: R$ 20,00</span>
+                    <span class="p-grid-bet">Aposta: R$ ${currentBetNum.toFixed(2).replace('.', ',')}</span>
                     <span class="p-grid-status" style="color:#ef4444">Aguardando Confirmação</span>
                 </div>
                 <div class="status-indicator-icon">❌</div>
@@ -132,8 +136,8 @@ function renderMockPlayersGrid() {
         }
         container.appendChild(card);
     }
-    document.getElementById('bet-prize-total-val').innerText = `PRÊMIO TOTAL: R$ ${(slotsCount * 20).toFixed(2).replace('.', ',')}`;
-    document.getElementById('bet-panel-validation-banner').innerText = "Aba rodando em modo de espera no lobby. Digite um código de mesa ou crie uma sala para parear.";
+    document.getElementById('bet-prize-total-val').innerText = `PRÊMIO TOTAL: R$ ${(slotsCount * currentBetNum).toFixed(2).replace('.', ',')}`;
+    document.getElementById('bet-panel-validation-banner').innerText = "API Carteira Ativa! Modifique o valor na sua carteira lateral para espelhar o prêmio aqui.";
 }
 
 function renderPlayersGrid(room) {
@@ -190,7 +194,6 @@ function renderPlayersGrid(room) {
     document.getElementById('bet-prize-total-val').innerText = `PRÊMIO TOTAL: R$ ${totalAccumulatedPrize.toFixed(2).replace('.', ',')}`;
 
     const banner = document.getElementById('bet-panel-validation-banner');
-    const mainStartBtn = document.getElementById('btn-create-room');
 
     if (totalPlayersConnected < slotsCount) {
         banner.className = "bet-banner-status bet-banner-error";
@@ -215,8 +218,6 @@ function renderPlayersGrid(room) {
 }
 
 function handleMyBetConfirmation() {
-    if (!activeRoomCode || !myLocalRole) return alert("Você precisa estar dentro de uma sala pareada para confirmar!");
-
     const currentBetString = document.getElementById('wallet-current-bet')?.innerText || "R$ 20,00";
     const betAmount = parseFloat(currentBetString.replace('R$', '').replace(',', '.').trim());
 
@@ -234,7 +235,19 @@ function handleMyBetConfirmation() {
         return account;
     }).then((result) => {
         if (result.committed) {
-            set(ref(db, `rooms/${activeRoomCode}/${myLocalRole}/betConfirmed`), true);
+            if (activeRoomCode && myLocalRole) {
+                set(ref(db, `rooms/${activeRoomCode}/${myLocalRole}/betConfirmed`), true);
+            } else {
+                // Mock de confirmação visual caso esteja clicando direto no lobby de teste
+                const firstCheck = document.querySelector('.bet-player-card .status-indicator-icon');
+                if(firstCheck) firstCheck.innerText = "✅";
+                const firstStatusText = document.querySelector('.bet-player-card .p-grid-status');
+                if(firstStatusText) {
+                    firstStatusText.innerText = "Aposta Confirmada";
+                    firstStatusText.style.color = "#22c55e";
+                }
+                alert(`Aposta de R$ ${betAmount.toFixed(2)} confirmada e descontada no ambiente de testes do Lobby!`);
+            }
         }
     });
 }
