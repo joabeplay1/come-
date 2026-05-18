@@ -23,25 +23,53 @@ let currentChatListener = null;
 // Captura de eventos da Interface
 document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('player-name');
+    const sidebarNameInput = document.getElementById('sidebar-player-name');
 
-    // REGISTRO AUTOMÁTICO: Assim que o jogador digita o nome e sai do campo (ou aperta Enter), ele entra na lista online
+    // REGISTRO AUTOMÁTICO (CAMPO CENTRAL): Assim que o jogador digita o nome e sai do campo (ou aperta Enter)
     if (nameInput) {
         nameInput.addEventListener('blur', () => {
             const name = nameInput.value.trim();
-            if (name) initLobbyPresence(name);
+            if (name) {
+                if (sidebarNameInput) sidebarNameInput.value = name; // Sincroniza a barra lateral
+                initLobbyPresence(name);
+            }
         });
 
         nameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const name = nameInput.value.trim();
-                if (name) initLobbyPresence(name);
+                if (name) {
+                    if (sidebarNameInput) sidebarNameInput.value = name; // Sincroniza a barra lateral
+                    initLobbyPresence(name);
+                }
+            }
+        });
+    }
+
+    // SINCRONIZAÇÃO E REGISTRO VIA CAMPO DA BARRA LATERAL
+    if (sidebarNameInput) {
+        sidebarNameInput.addEventListener('blur', () => {
+            const name = sidebarNameInput.value.trim();
+            if (name) {
+                if (nameInput) nameInput.value = name; // Sincroniza o campo central
+                initLobbyPresence(name);
+            }
+        });
+
+        sidebarNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const name = sidebarNameInput.value.trim();
+                if (name) {
+                    if (nameInput) nameInput.value = name; // Sincroniza o campo central
+                    initLobbyPresence(name);
+                }
             }
         });
     }
 
     // Garante que se o jogador clicar direto nos botões do jogo principal, a presença também ativa
     const bindSync = () => {
-        const name = nameInput.value.trim();
+        const name = nameInput ? nameInput.value.trim() : "";
         if (name) initLobbyPresence(name);
     };
     document.getElementById('btn-create-room').addEventListener('click', bindSync);
@@ -135,7 +163,7 @@ function renderOnlinePlayers(playersObj) {
 // Lógica de Conexão Dedicada ao Chat Privado
 function openPrivateChat(targetId, targetName) {
     if (!myLobbyId) {
-        return alert("Por favor, digite seu Nome/Apelido no campo central para ativar seu chat!");
+        return alert("Por favor, digite seu Nome/Apelido no campo central ou na barra lateral para ativar seu chat!");
     }
     
     // Cria um ID de sala único baseado nos identificadores dos dois jogadores
