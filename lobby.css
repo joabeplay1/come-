@@ -150,7 +150,7 @@
 /* ==========================================================================
    JANELA DO CHAT FLUTUANTE MOVÍVEL — DESIGN PREMIUM GLOW
    ========================================================================== */
-.chat-modal {
+.private-chat-modal, .chat-modal {
     position: fixed;
     bottom: 90px;
     left: 20px;
@@ -303,6 +303,103 @@
 }
 
 /* ==========================================================================
+   VISUAL PREMIUM: PARTÍCULAS DE DOMINÓ FLUTUANTES E AJUSTE DE PEÇAS
+   ========================================================================== */
+
+/* Força o fundo escuro moderno em todo o app */
+body {
+    background: radial-gradient(circle at center, #111614 0%, #060908 100%) !important;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Container das pedrinhas que ficam subindo ao fundo */
+#domino-particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Não bloqueia cliques nos elementos do jogo */
+    z-index: 0; /* Fica atrás das janelas e menus */
+    overflow: hidden;
+}
+
+/* Estilização de cada peça de dominó flutuante */
+.domino-particle {
+    position: absolute;
+    bottom: -70px;
+    background: rgba(255, 255, 255, 0.03); /* Transparência sutil elegante */
+    border: 1px solid rgba(212, 175, 55, 0.07); /* Contorno dourado sutil */
+    border-radius: 4px;
+    width: 30px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px;
+    box-sizing: border-box;
+    animation: floatUp linear infinite;
+}
+
+/* Linha divisória da peça de dominó de fundo */
+.domino-particle::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: rgba(212, 175, 55, 0.07);
+    position: absolute;
+    top: 50%;
+    left: 0;
+}
+
+/* Animação que faz as peças subirem rotacionando levemente */
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-125vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ====== JOGABILIDADE: MAIOR TAMANHO DAS PEDRINHAS DO TABLEIRO REAL ====== */
+
+/* Peças colocadas no tabuleiro de feltro da mesa */
+.chain-container .domino-piece, 
+#domino-chain .domino-piece {
+    width: 55px !important;   /* Tamanho ampliado */
+    height: 100px !important; /* Tamanho ampliado */
+    border-radius: 8px !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Peças que ficam na mão do usuário (para fácil clique) */
+.hand-container .domino-piece, 
+#my-hand .domino-piece {
+    width: 65px !important;   /* Tamanho ampliado na mão */
+    height: 120px !important; /* Tamanho ampliado na mão */
+    border-radius: 8px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Efeito luminoso e elevação ao passar o mouse por cima das suas peças */
+.hand-container .domino-piece:hover, 
+#my-hand .domino-piece:hover {
+    transform: translateY(-15px) scale(1.05) !important;
+    box-shadow: 0 12px 25px rgba(212, 175, 55, 0.35) !important;
+}
+
+/* ==========================================================================
    RESPONSIVIDADE MOBILE
    ========================================================================== */
 @media (max-width: 768px) {
@@ -318,5 +415,14 @@
     }
     .chat-card.minimized {
         width: 150px;
+    }
+    /* Reduz levemente a escala no mobile para não quebrar em telas pequenas */
+    .chain-container .domino-piece, #domino-chain .domino-piece {
+        width: 45px !important;
+        height: 82px !important;
+    }
+    .hand-container .domino-piece, #my-hand .domino-piece {
+        width: 52px !important;
+        height: 95px !important;
     }
 }
