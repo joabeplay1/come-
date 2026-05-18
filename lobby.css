@@ -1,8 +1,6 @@
 /* ==========================================================================
-   SISTEMA DE LOBBY & CHAT FLUTUANTE MOVÍVEL — ESTILO PREMIUM DARK
+   BARRA LATERAL DE MONITORAMENTO (APENAS NA TELA INICIAL / LOBBY)
    ========================================================================== */
-
-/* Sidebar de Presença Lateral (Apenas no Lobby) */
 .lobby-sidebar {
     position: fixed;
     top: 70px;
@@ -14,8 +12,13 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 80;
-    display: flex;
-    flex-direction: column;
+    display: none; /* ESCONDE POR PADRÃO EM TODAS AS TELAS */
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+}
+
+/* MOSTRA A BARRA DE MONITORAMENTO APENAS SE A TELA INICIAL ESTIVER ATIVA */
+#lobby-screen:not(.hidden) ~ #lobby-presence-sidebar {
+    display: flex !important;
 }
 
 .sidebar-header {
@@ -74,6 +77,7 @@
 .player-info-meta .p-name {
     font-weight: 600;
     color: #fff;
+    font-size: 0.95rem;
 }
 
 .player-info-meta .p-status {
@@ -91,46 +95,44 @@
 .status-dot.Ausente { background-color: #eab308; }
 
 /* ==========================================================================
-   JANELA FLUTUANTE MOVÍVEL E MINIMIZÁVEL (DESIGN PREMIUM GLOW)
+   JANELA DO CHAT FLUTUANTE MOVÍVEL — DESIGN PREMIUM GLOW
    ========================================================================== */
 .chat-modal {
     position: fixed;
-    /* Inicia no canto esquerdo inferior por padrão, livre da mesa central */
     bottom: 90px;
     left: 20px;
     z-index: 999;
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
-    pointer-events: none; /* Deixa cliques passarem para a mesa se estiver invisível */
+    pointer-events: none; 
 }
 
 .chat-card {
     width: 340px;
     height: 420px;
-    background: rgba(15, 20, 18, 0.85);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(15, 20, 18, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.25);
     border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 15px rgba(212, 175, 55, 0.1);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    pointer-events: auto; /* Reativa cliques dentro do chat */
-    transition: width 0.3s ease, height 0.3s ease, border-color 0.3s;
-    touch-action: none; /* Melhora arraste no mobile */
+    pointer-events: auto; 
+    transition: width 0.25s cubic-bezier(0.075, 0.82, 0.165, 1), height 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
+    touch-action: none;
 }
 
-/* Header do chat serve como barra para arrastar a janela */
 .chat-header {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     padding: 0.8rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    cursor: move; /* Cursor de movimento no PC */
+    cursor: move;
 }
 
 .chat-header span {
@@ -160,7 +162,7 @@
 
 .chat-ctrl-btn:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .messages-container {
@@ -170,7 +172,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: rgba(10, 15, 13, 0.4);
+    background: rgba(10, 15, 13, 0.5);
 }
 
 .msg-bubble {
@@ -187,19 +189,20 @@
     color: #000;
     align-self: flex-end;
     border-bottom-right-radius: 2px;
+    font-weight: 500;
 }
 
 .msg-bubble.them {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.07);
     color: #fff;
-    align-self: flex-start;
+    align-start: flex-start;
     border-bottom-left-radius: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .chat-footer {
     padding: 0.6rem;
-    background: rgba(5, 8, 7, 0.6);
+    background: rgba(5, 8, 7, 0.7);
     display: flex;
     gap: 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -207,8 +210,8 @@
 
 .chat-footer input {
     flex: 1;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
     color: #fff;
@@ -229,12 +232,14 @@
 
 .chat-footer button:hover { background: #d4af37; color: #000; }
 
-/* ESTADO MINIMIZADO (Estilo Barra/Ícone Inteligente na Lateral) */
+/* ==========================================================================
+   ESTADO MINIMIZADO DO CHAT (PEQUENA BARRA COMPACTA)
+   ========================================================================== */
 .chat-card.minimized {
-    width: 180px;
+    width: 200px;
     height: 40px;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
 .chat-card.minimized .messages-container,
@@ -242,7 +247,18 @@
     display: none !important;
 }
 
-/* Controle de exibição da Barra de Presença nas telas do jogo */
-#game-screen ~ #lobby-presence-sidebar {
-    display: none !important; /* Esconde monitoramento lateral na tela do jogo */
+/* ==========================================================================
+   RESPONSIVIDADE MOBILE
+   ========================================================================== */
+@media (max-width: 768px) {
+    .lobby-sidebar {
+        width: 200px;
+    }
+    .chat-card {
+        width: 280px;
+        height: 340px;
+    }
+    .chat-card.minimized {
+        width: 150px;
+    }
 }
