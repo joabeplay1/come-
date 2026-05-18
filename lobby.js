@@ -20,22 +20,39 @@ let myLobbyId = null;
 let currentChatRoomId = null;
 let currentChatListener = null;
 
-// Captura o clique dos botões principais para ativar a sincronização assim que o player escolhe um nome
+// Captura de eventos da Interface
 document.addEventListener('DOMContentLoaded', () => {
-    const bindSync = () => {
-        const nameInput = document.getElementById('player-name').value.trim();
-        if (nameInput) initLobbyPresence(nameInput);
-    };
+    const nameInput = document.getElementById('player-name');
 
+    // REGISTRO AUTOMÁTICO: Assim que o jogador digita o nome e sai do campo (ou aperta Enter), ele entra na lista online
+    if (nameInput) {
+        nameInput.addEventListener('blur', () => {
+            const name = nameInput.value.trim();
+            if (name) initLobbyPresence(name);
+        });
+
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const name = nameInput.value.trim();
+                if (name) initLobbyPresence(name);
+            }
+        });
+    }
+
+    // Garante que se o jogador clicar direto nos botões do jogo principal, a presença também ativa
+    const bindSync = () => {
+        const name = nameInput.value.trim();
+        if (name) initLobbyPresence(name);
+    };
     document.getElementById('btn-create-room').addEventListener('click', bindSync);
     document.getElementById('btn-join-room').addEventListener('click', bindSync);
     
-    // Controles do Chat Privado
+    // Controles do Chat Privado Flutuante
     document.getElementById('btn-close-chat').onclick = closePrivateChat;
     document.getElementById('btn-send-message').onclick = sendPrivateMessage;
     document.getElementById('select-my-status').onchange = (e) => updateMyStatus(e.target.value);
     
-    // Inicialização dos botões de minimizar/expandir a janela flutuante
+    // Inicialização do botão de minimizar/expandir o card do chat
     const chatCard = document.getElementById('draggable-chat-card');
     const minimizeBtn = document.getElementById('btn-minimize-chat');
     
@@ -47,16 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Ativação do motor de arraste omnidirecional na barra de título do chat
+    // Ativa o motor de arraste livre (Drag & Drop)
     makeElementDraggable(chatCard, document.getElementById('chat-drag-handle'));
     
-    // Rotina de varredura e limpeza automática cíclica (Roda localmente para economizar processamento)
+    // Rotina de limpeza automática cíclica de mensagens antigas (Gera economia de memória)
     setInterval(performAutoGarbageCollection, 5000);
 });
 
-// Inicializa o sistema de Presença
+// Inicializa o sistema de Presença no Firebase de forma imediata
 function initLobbyPresence(name) {
-    if (myLobbyId) return; // Evita múltiplas instâncias do mesmo player
+    if (myLobbyId) return; // Impede duplicação do mesmo jogador na barra
     
     const presenceListRef = ref(db, 'presence');
     const newPlayerRef = push(presenceListRef);
@@ -70,13 +87,13 @@ function initLobbyPresence(name) {
 
     set(newPlayerRef, playerData);
 
-    // Remove do Firebase automaticamente se a aba ou o navegador fechar
+    // Remove o jogador da barra lateral se ele fechar a aba ou o navegador
     onDisconnect(newPlayerRef).remove();
 
-    // Torna a barra lateral visível para o usuário
+    // Torna a barra lateral visível imediatamente na tela inicial
     document.getElementById('lobby-presence-sidebar').classList.remove('hidden');
 
-    // Escuta a lista geral de players online
+    // Escuta em tempo real as conexões de outros usuários do Domino Aposta
     onValue(presenceListRef, (snapshot) => {
         renderOnlinePlayers(snapshot.val());
     });
@@ -88,14 +105,14 @@ function updateMyStatus(newStatus) {
     set(ref(db, `presence/${myLobbyId}/lastActive`), Date.now());
 }
 
-// Renderiza a lista de oponentes online
+// Renderiza os cards dos oponentes na barra lateral de monitoramento
 function renderOnlinePlayers(playersObj) {
     const container = document.getElementById('online-players-list');
     container.innerHTML = '';
     if (!playersObj) return;
 
     Object.keys(playersObj).forEach(key => {
-        if (key === myLobbyId) return; // Oculta o próprio usuário da lista dele
+        if (key === myLobbyId) return; // Oculta você mesmo da sua própria lista lateral
 
         const player = playersObj[key];
         const li = document.createElement('li');
@@ -109,22 +126,25 @@ function renderOnlinePlayers(playersObj) {
             <div class="status-dot ${player.status}"></div>
         `;
 
-        // Ao clicar em um jogador livre, abre a sala privada de chat
+        // Ao clicar no nome do jogador na barra lateral, dispara o chat flutuante
         li.onclick = () => openPrivateChat(key, player.name);
         container.appendChild(li);
     });
 }
 
-// Lógica de Abertura do Chat Privado de Comunicação
+// Lógica de Conexão Dedicada ao Chat Privado
 function openPrivateChat(targetId, targetName) {
-    // Cria um ID único determinístico para a conversa baseado nos dos dois IDs (ordem alfabética)
+    if (!myLobbyId) {
+        return alert("Por favor, digite seu Nome/Apelido no campo central para ativar seu chat!");
+    }
+    
+    // Cria um ID de sala único baseado nos identificadores dos dois jogadores
     currentChatRoomId = myLobbyId < targetId ? `${myLobbyId}_${targetId}` : `${targetId}_${myLobbyId}`;
     
     document.getElementById('chat-target-name').innerText = `Conversa com ${targetName}`;
     document.getElementById('private-chat-modal').classList.remove('hidden');
     document.getElementById('chat-messages-box').innerHTML = '';
 
-    // Remove listener anterior se houver
     if (currentChatListener) currentChatListener();
 
     const chatRef = ref(db, `chats/${currentChatRoomId}`);
@@ -169,11 +189,8 @@ function renderMessages(messagesObj) {
     box.scrollTop = box.scrollHeight;
 }
 
-// ==========================================================================
-// SISTEMA AUTOMÁTICO DE LIMPEZA (GARBAGE COLLECTION — LIMITE DE 10 MINUTOS)
-// ==========================================================================
+// Motor de Autolimpeza do Firebase (Filtro de estabilidade de 10 minutos)
 function performAutoGarbageCollection() {
-    // Só executa se houver conexão ativa
     if (!myLobbyId) return;
 
     const chatsRef = ref(db, 'chats');
@@ -190,15 +207,12 @@ function performAutoGarbageCollection() {
             Object.keys(messages).forEach(msgId => {
                 messagesCount++;
                 const msg = messages[msgId];
-                
-                // Regra 1: Apaga mensagens com mais de 10 minutos
                 if (msg.timestamp < dezMinutosAtras) {
                     remove(ref(db, `chats/${roomId}/${msgId}`));
                     messagesCount--;
                 }
             });
 
-            // Regra 2: Se a sala ficou vazia de mensagens, limpa o nó do banco de dados
             if (messagesCount === 0) {
                 remove(ref(db, `chats/${roomId}`));
             }
@@ -206,9 +220,7 @@ function performAutoGarbageCollection() {
     }, { onlyOnce: true });
 }
 
-// ==========================================================================
-// MOTOR MATEMÁTICO DE ARRASTE (DRAG & DROP) PARA PC E CELULARES TOUCH
-// ==========================================================================
+// Mecanismo Computacional de Movimentação Omnidirecional (PC e Mobile)
 function makeElementDraggable(elmnt, dragHandle) {
     if (!elmnt) return;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -256,7 +268,6 @@ function makeElementDraggable(elmnt, dragHandle) {
         let newTop = elmnt.offsetTop - pos2;
         let newLeft = elmnt.offsetLeft - pos1;
 
-        // Margens de segurança para travar a janela dentro dos limites visíveis da tela
         if (newTop < 0) newTop = 0;
         if (newLeft < 0) newLeft = 0;
         if (newTop > window.innerHeight - elmnt.clientHeight) newTop = window.innerHeight - elmnt.clientHeight;
@@ -264,7 +275,7 @@ function makeElementDraggable(elmnt, dragHandle) {
 
         elmnt.style.top = newTop + "px";
         elmnt.style.left = newLeft + "px";
-        elmnt.style.bottom = "auto"; // Desativa ancoragem fixa padrão após mover
+        elmnt.style.bottom = "auto";
     }
 
     function closeDragElement() {
