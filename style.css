@@ -188,6 +188,32 @@ button {
     color: var(--gold-premium);
 }
 
+.btn-small {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.btn-small:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.status-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#waiting-status {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
 /* Mesa de Jogo (Feltro Profissional) */
 #game-screen {
     flex-direction: column;
@@ -212,6 +238,11 @@ button {
     gap: 1rem;
 }
 
+.player-name-tag {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
 .score-digit {
     font-size: 1.8rem;
     font-weight: 800;
@@ -220,6 +251,21 @@ button {
     padding: 0.2rem 0.8rem;
     border-radius: 6px;
     border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.match-info {
+    text-align: center;
+}
+
+#turn-indicator {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+#pool-info {
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 .domino-table {
@@ -239,7 +285,7 @@ button {
     background: var(--felt-green);
     border-radius: 16px;
     box-shadow: inset 0 0 80px rgba(0,0,0,0.9), var(--shadow-real);
-    border: 8px solid #22140a; /* Borda de madeira simulada */
+    border: 8px solid #22140a;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -250,78 +296,107 @@ button {
 .chain-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     padding: 40px;
     min-width: max-content;
 }
 
-/* Peças de Dominó Profissionais */
+/* ==========================================================================
+   PEÇAS DE DOMINÓ PROFISSIONAIS ULTRA-REALISTAS E MAIORES
+   ========================================================================== */
 .domino-piece {
-    width: 50px;
-    height: 90px;
-    background: #fcfcf9;
-    border-radius: 6px;
+    width: 65px;         
+    height: 120px;       
+    background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 50%, #e2e2e2 100%);
+    border-radius: 10px; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 6px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 2px 4px #fff;
+    padding: 8px;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.6), 
+        inset 0 3px 5px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
     position: relative;
+    border: 1px solid #dcdcdc;
 }
 
+/* Efeito Hover Modernizado */
 .domino-piece:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 15px 20px rgba(0,0,0,0.6), 0 0 12px rgba(212, 175, 55, 0.8);
+    transform: translateY(-14px) scale(1.04);
+    box-shadow: 
+        0 20px 30px rgba(0, 0, 0, 0.7), 
+        0 0 15px rgba(212, 175, 55, 0.9);
 }
 
-/* Divisor central metálico do dominó profissional */
+/* Divisor central metálico premium */
 .domino-piece::after {
     content: "";
     position: absolute;
     left: 10%;
     top: 50%;
     width: 80%;
-    height: 2px;
-    background: #999;
-    box-shadow: 0 1px 1px rgba(255,255,255,0.6);
+    height: 3px;
+    background: linear-gradient(to right, #808080, #bdbdbd, #808080);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    transform: translateY(-50%);
 }
 
-/* Layout Interno dos Pontos (Half) */
+/* Pino Central de Latão Típico de Dominó Profissional */
+.domino-piece::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    background: radial-gradient(circle, #f3e5ab 0%, #d4af37 100%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.6);
+    z-index: 2;
+}
+
+/* Layout Interno dos Pontos */
 .domino-half {
-    height: 40%;
+    height: 42%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 2px;
+    gap: 4px;
     justify-items: center;
     align-items: center;
+    width: 100%;
 }
 
+/* Bolinhas Pretas Profundas e Modernas */
 .dot {
-    width: 6px;
-    height: 6px;
-    background: #111;
+    width: 9px;          
+    height: 9px;         
+    background: radial-gradient(circle, #333333 0%, #050505 100%);
     border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.4);
 }
 
 /* Alinhamento de Peças na Mesa (Horizontais) */
 .domino-piece.horizontal {
-    width: 90px;
-    height: 50px;
+    width: 120px;
+    height: 65px;
     flex-direction: row;
 }
 
 .domino-piece.horizontal::after {
     left: 50%;
     top: 10%;
-    width: 2px;
+    width: 3px;
     height: 80%;
+    transform: translateX(-50%);
 }
 
 .domino-piece.horizontal .domino-half {
-    width: 40%;
+    width: 42%;
     height: 100%;
 }
 
@@ -337,10 +412,15 @@ button {
     gap: 10px;
 }
 
+.opponent-hand-status {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
 .hand-container {
     display: flex;
-    gap: 12px;
-    padding: 10px 0;
+    gap: 16px;
+    padding: 15px 0;
     max-width: 100%;
     overflow-x: auto;
 }
@@ -359,11 +439,26 @@ button {
     color: #000;
 }
 
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top-color: var(--gold-premium);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 1.5rem auto 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Responsividade Mobile */
 @media (max-width: 768px) {
     .game-header { padding: 0 1rem; }
     .score-digit { font-size: 1.4rem; }
-    .domino-piece { width: 38px; height: 68px; padding: 4px; }
-    .domino-piece.horizontal { width: 68px; height: 38px; }
-    .dot { width: 4px; height: 4px; }
+    .domino-piece { width: 45px; height: 85px; padding: 4px; }
+    .domino-piece.horizontal { width: 85px; height: 45px; }
+    .dot { width: 6px; height: 6px; }
+    .domino-piece::before { width: 3px; height: 3px; }
 }
