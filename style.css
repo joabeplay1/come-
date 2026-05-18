@@ -302,11 +302,11 @@ button {
 }
 
 /* ==========================================================================
-   ESTILO DE PEDRA PROFISSIONAL REALISTA (INSPIRADO NA IMAGEM DE REFERÊNCIA)
+   ESTILO DE PEDRA PROFISSIONAL REALISTA (DIMENSÕES AMPLIADAS PROPORCIONAIS)
    ========================================================================== */
 .domino-piece {
-    width: 50px;
-    height: 90px;
+    width: 62px;         /* Ajustado para 62px (Mais presença na tela) */
+    height: 110px;       /* Ajustado para 110px (Visual encorpado) */
     background: linear-gradient(135deg, #f8f6e6 0%, #ece8cd 100%); /* Cor marfim/osso realista */
     border-radius: 8px;
     display: flex;
@@ -387,10 +387,10 @@ button {
 .dot.dot-val-5 { background-color: #9333ea; } /* Roxo */
 .dot.dot-val-6 { background-color: #111111; } /* Preto */
 
-/* Alinhamento de Peças na Mesa (Horizontais) */
+/* Alinhamento de Peças na Mesa (Horizontais) - Proporção Corrigida */
 .domino-piece.horizontal {
-    width: 90px;
-    height: 50px;
+    width: 110px;        /* Aumentado de forma síncrona com o tamanho vertical */
+    height: 62px;
     flex-direction: row;
 }
 
@@ -460,12 +460,17 @@ button {
     to { transform: rotate(360deg); }
 }
 
-/* Responsividade Mobile */
+/* ==========================================================================
+   RESPONSIVIDADE MOBILE — ADAPTADO PARA AS NOVAS PEDRAS MAIORES
+   ========================================================================== */
 @media (max-width: 768px) {
     .game-header { padding: 0 1rem; }
     .score-digit { font-size: 1.4rem; }
-    .domino-piece { width: 42px; height: 76px; padding: 4px; }
-    .domino-piece.horizontal { width: 76px; height: 42px; }
+    
+    /* Peças mobile também ganham um aumento proporcional confortável */
+    .domino-piece { width: 48px; height: 86px; padding: 4px; }
+    .domino-piece.horizontal { width: 86px; height: 48px; }
+    
     .dot { width: 6px; height: 6px; }
     .domino-piece::before { width: 3px; height: 3px; }
 }
