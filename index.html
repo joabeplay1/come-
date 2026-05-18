@@ -72,7 +72,7 @@
             <div class="table-felt">
                 <div id="domino-chain" class="chain-container"></div>
             </div>
-        </header>
+        </main>
 
         <footer class="player-panel">
             <div class="opponent-hand-status">
@@ -145,7 +145,7 @@
         <div class="wallet-header" id="wallet-drag-handle">
             <span class="wallet-title">SUÍTE <span>PREMIUM</span></span>
             <div class="wallet-window-ctrls">
-                <button id="btn-minimize-wallet" class="wallet-ctrl-btn" title="Minimizar MenuMenu">—</button>
+                <button id="btn-minimize-wallet" class="wallet-ctrl-btn" title="Minimizar Menu">—</button>
             </div>
         </div>
 
@@ -170,13 +170,22 @@
             </div>
 
             <div class="wallet-section shadow-card">
+                <h4>Definir Valor da Aposta</h4>
+                <p class="muted-text">Escolha o valor que deseja casar na rodada:</p>
+                <div class="bet-selector-container">
+                    <button id="btn-bet-decrease" class="btn-bet-step">—</button>
+                    <span id="wallet-current-bet" class="current-bet-display">R$ 1,00</span>
+                    <button id="btn-bet-increase" class="btn-bet-step">+</button>
+                </div>
+                <div id="wallet-bet-status-banner" class="bet-success-banner">Apostas combinadas!</div>
+            </div>
+
+            <div class="wallet-section shadow-card">
                 <h4>Operações de Caixa</h4>
-                
                 <div class="wallet-action-box">
                     <h5>Adicionar Fundos via PIX</h5>
                     <button id="btn-wallet-deposit-pix" class="btn-wallet-primary">Gerar Código PIX Copy-Paste</button>
                 </div>
-
                 <div class="wallet-action-box" style="margin-top: 15px;">
                     <h5>Retirar Saldo / Estorno PIX</h5>
                     <input type="text" id="wallet-pix-key" placeholder="Confirme sua Chave PIX (CPF/E-mail/Celular)">
@@ -204,9 +213,7 @@
                 <p id="wallet-sec-ip">IP Registrado: Carregando...</p>
                 <p id="wallet-sec-activity">Status Antifraude: Verificado</p>
             </div>
-
         </div>
-
         <div id="wallet-resize-handle" class="wallet-resizer"></div>
     </div>
 
