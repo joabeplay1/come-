@@ -89,5 +89,41 @@
     </div>
 
     <script type="module" src="script.js"></script>
+
+
+    <link rel="stylesheet" href="lobby.css">
+
+    <div id="lobby-presence-sidebar" class="lobby-sidebar hidden">
+        <div class="sidebar-header">
+            <h3>Jogadores Online</h3>
+            <div class="my-status-control">
+                <select id="select-my-status">
+                    <option value="Disponível">🟢 Disponível</option>
+                    <option value="Jogando">🔴 Jogando</option>
+                    <option value="Ausente">🟡 Ausente</option>
+                </select>
+            </div>
+        </div>
+        <ul id="online-players-list">
+            </ul>
+    </div>
+
+    <div id="private-chat-modal" class="chat-modal hidden">
+        <div class="chat-card">
+            <div class="chat-header">
+                <span id="chat-target-name">Conversa Privada</span>
+                <button id="btn-close-chat" class="close-icon">&times;</button>
+            </div>
+            <div id="chat-messages-box" class="messages-container">
+                </div>
+            <div class="chat-footer">
+                <input type="text" id="chat-input-message" placeholder="Digite sua mensagem ou o código da mesa..." maxlength="200">
+                <button id="btn-send-message">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="lobby.js"></script>
+
 </body>
 </html>
