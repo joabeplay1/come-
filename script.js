@@ -1,21 +1,32 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import firebaseConfig from "./firebase-config.js";
 
-// Inicialização do Firebase
+// Suas credenciais oficiais inseridas de forma nativa no módulo central
+const firebaseConfig = {
+    apiKey: "AIzaSyCZ4rOliexofYP8vyRLzUeX3mf5uXG6WRM",
+    authDomain: "aposta-96213.firebaseapp.com",
+    databaseURL: "https://aposta-96213-default-rtdb.firebaseio.com",
+    projectId: "aposta-96213",
+    storageBucket: "aposta-96213.firebasestorage.app",
+    messagingSenderId: "989060185373",
+    appId: "1:989060185373:web:69bb80b2f961fe8e9d35f4",
+    measurementId: "G-1LTXVCXHX5"
+};
+
+// Inicialização das instâncias
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Estado do Jogo Local
+// Estado Local da Sessão
 let gameState = {
     roomCode: null,
-    playerRole: null, // 'p1' ou 'p2'
+    playerRole: null, 
     playerName: '',
     hand: [],
     isMyTurn: false
 };
 
-// Sintetizador de Som Nativo (Web Audio API) para evitar arquivos ausentes no GitHub Pages
+// Gerador de Áudio Interno contra quebras de asset no Github Pages
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playDominoSound(frequency = 300, type = 'sine', duration = 0.08) {
     try {
@@ -29,10 +40,10 @@ function playDominoSound(frequency = 300, type = 'sine', duration = 0.08) {
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-    } catch (e) { console.log("Áudio aguardando interação do usuário."); }
+    } catch (e) { console.log("Áudio aguardando interação inicial."); }
 }
 
-// Elementos do DOM
+// Mapeamento dos Telas
 const screens = {
     loading: document.getElementById('loading-screen'),
     lobby: document.getElementById('lobby-screen'),
@@ -40,12 +51,12 @@ const screens = {
     game: document.getElementById('game-screen')
 };
 
-// Remover tela de carregamento inicial
+// Evento Inicial de Entrada
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => screens.loading.classList.add('hidden'), 1000);
 });
 
-// Ações de Registro e Criação de Salas
+// Listener de botões da interface
 document.getElementById('btn-create-room').addEventListener('click', () => {
     const name = document.getElementById('player-name').value.trim();
     if (!name) return alert('Por favor, digite seu nome primeiro!');
@@ -69,7 +80,7 @@ document.getElementById('btn-join-room').addEventListener('click', () => {
     joinRoomOnFirebase();
 });
 
-// Criação da estrutura inicial da Sala no Firebase
+// Configura Sala no RTDB
 function setupRoomOnFirebase() {
     const roomRef = ref(db, 'rooms/' + gameState.roomCode);
     const initialData = {
@@ -78,8 +89,7 @@ function setupRoomOnFirebase() {
         p2: { name: '', score: 0 },
         chain: [],
         deck: [],
-        turn: 'p1',
-        history: 'Mesa criada.'
+        turn: 'p1'
     };
     
     set(roomRef, initialData).then(() => {
@@ -89,7 +99,7 @@ function setupRoomOnFirebase() {
     });
 }
 
-// Conectar em uma sala existente
+// Vincula Segundo Jogador à Sala
 function joinRoomOnFirebase() {
     const roomRef = ref(db, 'rooms/' + gameState.roomCode);
     update(roomRef, {
@@ -97,22 +107,27 @@ function joinRoomOnFirebase() {
         'status': 'playing'
     }).then(() => {
         listenToRoomChanges();
-    }).catch(() => alert('Erro ao entrar na sala. Verifique o código.'));
+    }).catch(() => alert('Erro ao conectar. Código inválido.'));
 }
 
+// ==========================================================================
+// CENTRALIZADOR DA SINCRONIZAÇÃO SEM CONCORRÊNCIA DE BOT
+// ==========================================================================
 function listenToRoomChanges() {
     const roomRef = ref(db, 'rooms/' + gameState.roomCode);
     onValue(roomRef, (snapshot) => {
         const data = snapshot.val();
         if (!data) return;
 
-        // Se o status mudar para tocando, inicia o tabuleiro
         if (data.status === 'playing') {
             if (screens.game.classList.contains('hidden')) {
                 switchScreen('game');
                 document.getElementById('game-room-id').innerText = `#${gameState.roomCode}`;
-                if(gameState.playerRole === 'p1' && (!data.deck || data.deck.length === 0)) {
+                
+                // Apenas P1 gera o baralho uma única vez atómicamente
+                if (gameState.playerRole === 'p1' && (!data.deck || data.deck.length === 0) && (!data.p1.hand)) {
                     generateAndDistributePieces();
+                    return;
                 }
             }
             updateGameTable(data);
@@ -120,7 +135,7 @@ function listenToRoomChanges() {
     });
 }
 
-// Motor de Geração e Distribuição de Peças (Regras do Brasil)
+// Distribuição unificada sem apagar mãos
 function generateAndDistributePieces() {
     let pool = [];
     for (let i = 0; i <= 6; i++) {
@@ -128,7 +143,7 @@ function generateAndDistributePieces() {
             pool.push({ left: i, right: j, id: `d-${i}-${j}` });
         }
     }
-    // Embaralhamento profissional (Fisher-Yates)
+    
     for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -138,13 +153,9 @@ function generateAndDistributePieces() {
     const p2Hand = pool.slice(7, 14);
     const remainingDeck = pool.slice(14);
 
-    // Identificar quem tem a maior bucha (preferencialmente a bucha de 6) para iniciar
     let firstTurn = 'p1';
-    const p1HasBucha6 = p1Hand.some(p => p.left === 6 && p.right === 6);
-    if (!p1HasBucha6) {
-        const p2HasBucha6 = p2Hand.some(p => p.left === 6 && p.right === 6);
-        if (p2HasBucha6) firstTurn = 'p2';
-    }
+    const p2HasBucha6 = p2Hand.some(p => p.left === 6 && p.right === 6);
+    if (p2HasBucha6) firstTurn = 'p2';
 
     update(ref(db, 'rooms/' + gameState.roomCode), {
         'p1/hand': p1Hand,
@@ -154,34 +165,29 @@ function generateAndDistributePieces() {
     });
 }
 
-// Atualização e Renderização da Mesa em Tempo Real
+// Renderiza a interface a cada atualização do banco
 function updateGameTable(data) {
-    // Atualizar Placar e Nomes
     document.getElementById('score-p1-name').innerText = data.p1.name || "Aguardando...";
     document.getElementById('score-p2-name').innerText = data.p2.name || "Aguardando...";
     document.getElementById('score-p1-val').innerText = String(data.p1.score).padStart(2, '0');
     document.getElementById('score-p2-val').innerText = String(data.p2.score).padStart(2, '0');
 
-    // Determinar Turno
     gameState.isMyTurn = (data.turn === gameState.playerRole);
-    const activePlayerName = data[data.turn].name;
+    const activePlayerName = data[data.turn] ? data[data.turn].name : '...';
     document.getElementById('turn-indicator').innerText = gameState.isMyTurn ? "Sua Vez de Jogar!" : `Vez de: ${activePlayerName}`;
     document.getElementById('turn-indicator').style.color = gameState.isMyTurn ? "var(--gold-premium)" : "var(--text-muted)";
 
-    // Guardar Mão Local
     gameState.hand = data[gameState.playerRole]?.hand || [];
     renderMyHand();
 
-    // Renderizar contagem do adversário
     const oppRole = gameState.playerRole === 'p1' ? 'p2' : 'p1';
     const oppHandCount = data[oppRole]?.hand ? data[oppRole].hand.length : 0;
     document.getElementById('opponent-count').innerText = oppHandCount;
 
-    // Renderizar Corrente central
     renderChain(data.chain || []);
 }
 
-// Renderizador Visual de Peça de Dominó Funcional
+// Renderizador dos pontos em formato de Grid Profissional 3x3
 function createDominoElement(piece, isClickable = false) {
     const el = document.createElement('div');
     el.className = 'domino-piece';
@@ -190,12 +196,33 @@ function createDominoElement(piece, isClickable = false) {
     const renderHalf = (val) => {
         const half = document.createElement('div');
         half.className = 'domino-half';
-        // Mapeamento simples de posições de pontos baseado no valor
-        const dotCounts = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6};
-        for(let i=0; i<dotCounts[val]; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            half.appendChild(dot);
+        
+        const dotPositions = {
+            0: [],
+            1: [4],
+            2: [0, 8],
+            3: [0, 4, 8],
+            4: [0, 2, 6, 8],
+            5: [0, 2, 4, 6, 8],
+            6: [0, 2, 3, 5, 6, 8]
+        };
+
+        const activeDots = dotPositions[val] || [];
+        
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.style.width = '100%';
+            cell.style.height = '100%';
+            cell.style.display = 'flex';
+            cell.style.justifyContent = 'center';
+            cell.style.alignItems = 'center';
+            
+            if (activeDots.includes(i)) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                cell.appendChild(dot);
+            }
+            half.appendChild(cell);
         }
         return half;
     };
@@ -227,16 +254,15 @@ function renderChain(chain) {
 
     chain.forEach(piece => {
         const dominoNode = createDominoElement(piece, false);
-        dominoNode.classList.add('horizontal'); // Layout horizontal padrão na mesa
+        dominoNode.classList.add('horizontal');
         container.appendChild(dominoNode);
     });
 }
 
-// Processamento de Regras do Jogo ao Tentar Jogar Peça
+// Regras e Encaixes
 function handlePieceSelection(piece) {
     const roomRef = ref(db, 'rooms/' + gameState.roomCode);
     
-    // Obter dados atuais diretamente para validação atômica local rápida
     onValue(roomRef, (snapshot) => {
         const data = snapshot.val();
         if (!data || data.turn !== gameState.playerRole) return;
@@ -246,26 +272,22 @@ function handlePieceSelection(piece) {
         let matched = false;
 
         if (chain.length === 0) {
-            // Primeira jogada da rodada livre
             updatedChain.push(piece);
             matched = true;
         } else {
             const leftOuter = chain[0].left;
             const rightOuter = chain[chain.length - 1].right;
 
-            // Validação das extremidades da mesa brasileira
             if (piece.left === rightOuter) {
                 updatedChain.push(piece);
                 matched = true;
             } else if (piece.right === rightOuter) {
-                // Inverter peça para casar valor
                 updatedChain.push({ left: piece.right, right: piece.left, id: piece.id });
                 matched = true;
             } else if (piece.right === leftOuter) {
                 updatedChain.unshift(piece);
                 matched = true;
             } else if (piece.left === leftOuter) {
-                // Inverter peça para casar valor na ponta esquerda
                 updatedChain.unshift({ left: piece.right, right: piece.left, id: piece.id });
                 matched = true;
             }
@@ -273,21 +295,17 @@ function handlePieceSelection(piece) {
 
         if (matched) {
             playDominoSound(440, 'triangle', 0.1);
-            // Remover peça da mão do jogador
             const updatedHand = gameState.hand.filter(p => p.id !== piece.id);
             const nextTurn = gameState.playerRole === 'p1' ? 'p2' : 'p1';
 
-            // Verificação de Vitória de Rodada (Bateu)
             if (updatedHand.length === 0) {
                 alert("Você bateu a rodada!");
-                // Adiciona pontos ao vencedor (Soma de pontos simplificada)
-                const currentScore = data[gameState.playerRole].score + 10; 
+                const currentScore = (data[gameState.playerRole].score || 0) + 10; 
                 
                 update(ref(db, 'rooms/' + gameState.roomCode), {
                     [`${gameState.playerRole}/hand`]: updatedHand,
                     'chain': updatedChain,
-                    [`${gameState.playerRole}/score`]: currentScore,
-                    'status': 'playing' // Próxima rodada limpa o deck
+                    [`${gameState.playerRole}/score`]: currentScore
                 });
                 generateAndDistributePieces();
             } else {
@@ -298,13 +316,12 @@ function handlePieceSelection(piece) {
                 });
             }
         } else {
-            playDominoSound(150, 'sawtooth', 0.2); // Som de erro/recusa
-            alert("Esta peça não se encaixa nas pontas atuais da mesa!");
+            playDominoSound(150, 'sawtooth', 0.2);
+            alert("Esta peça não cabe nas pontas da mesa!");
         }
     }, { onlyOnce: true });
 }
 
-// Navegação entre Telas do App
 function switchScreen(screenKey) {
     Object.keys(screens).forEach(key => {
         if(screens[key]) screens[key].classList.add('hidden');
