@@ -534,17 +534,54 @@ button {
 /* Adaptação Dinâmica das Pedras no Feltro da Mesa (Ficam ligeiramente menores) */
 .chain-container .domino-piece, 
 #domino-chain .domino-piece {
-    width: var(--domino-w-table) !important;
-    height: var(--domino-h-table) !important;
+    width: var(--domino-h-table) !important;  /* Trocado w por h: vira largura */
+    height: var(--domino-w-table) !important; /* Trocado h por w: vira altura */
+    flex-direction: row !important;           /* Alinha as duas metades lado a lado */
     border-radius: 10px !important;
-    padding: 8px 6px !important;
+    padding: 8px 10px !important;
     animation: dropPieceSmooth 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
+/* Roda a linha divisória do meio para ficar em pé dividindo a pedra horizontal */
+.chain-container .domino-piece::after,
+#domino-chain .domino-piece::after {
+    left: 50% !important;
+    top: 6px !important; 
+    bottom: 6px !important;
+    width: 3px !important; 
+    height: calc(100% - 12px) !important; 
+    transform: translateX(-50%) !important;
+    background: linear-gradient(to bottom, #6b6b6b, #f0f0f0, #6b6b6b) !important;
+}
+
+/* Ajusta as metades internas para preencherem os lados esquerdo e direito */
+.chain-container .domino-piece .domino-half,
+#domino-chain .domino-piece .domino-half {
+    width: 44% !important;   /* Vira largura para caber lado a lado */
+    height: 100% !important;  /* Ocupa a altura total da peça horizontal */
+}
 /* Escalonamento proporcional das bolinhas quando as peças vão para a mesa */
 .chain-container .dot, #domino-chain .dot {
     width: 10px !important;
     height: 10px !important;
+}
+/* Gira a linha divisória do meio para ficar em pé dividindo a peça deitada */
+.chain-container .domino-piece::after,
+#domino-chain .domino-piece::after {
+    left: 50% !important;
+    top: 6px !important; 
+    bottom: 6px !important;
+    width: 3px !important; 
+    height: calc(100% - 12px) !important; 
+    transform: translateX(-50%) !important;
+    background: linear-gradient(to bottom, #6b6b6b, #f0f0f0, #6b6b6b) !important;
+}
+
+/* Ajusta o tamanho interno das metades para deitarem lado a lado na mesa */
+.chain-container .domino-piece .domino-half,
+#domino-chain .domino-piece .domino-half {
+    width: 44% !important;
+    height: 100% !important;
 }
 
 /* Corrige e deita o alinhamento das pedras que girarem para a HORIZONTAL */
