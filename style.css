@@ -15,7 +15,7 @@
     
     --shadow-real: 0 25px 55px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.5);
 
-    /* Constantes de tamanho ampliadas proporcionais das pedras profissionais */
+    /* Constantes de tamanho ampliadas profissionais das pedras */
     --domino-w-table: 70px;  /* Largura ideal na mesa */
     --domino-h-table: 140px; /* Altura ideal na mesa (Mantém proporção exata 1:2) */
     --domino-w-hand: 80px;   /* Largura ideal na mão do jogador */
@@ -43,17 +43,22 @@ body {
     position: relative;
 }
 
-/* Utilitários */
-.hidden { display: none !important; }
+/* Utilitários - RESTAURADO: Força sumir com total eficácia as telas inativas (.hidden) */
+.hidden { 
+    display: none !important; 
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 
-/* Estrutura das Telas - MODIFICADO: Centralização absoluta e rigorosa de todas as telas */
+/* Estrutura das Telas - MODIFICADO: Centralização perfeita, mas sem forçar o display flex quando for .hidden */
 .screen {
     width: 100%;
     height: 100%;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important; /* Alinha o card no meio verticalmente */
-    align-items: center !important;     /* Alinha o card no meio horizontalmente */
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;     
     position: absolute;
     top: 0;
     left: 0;
@@ -61,7 +66,7 @@ body {
     box-sizing: border-box;
 }
 
-/* Trava mecânica para a tela de jogo não concentrar tudo no meio e esmagar o tabuleiro */
+/* Trava para a tela de jogo manter o placar no topo e o painel embaixo com a mesa fixa no meio */
 #game-screen {
     justify-content: space-between !important;
 }
@@ -78,7 +83,7 @@ body {
     transition: opacity 0.5s ease;
 }
 
-/* Estilo Glassmorphism Premium MODIFICADO: Layout Verde com Aura Dourada */
+/* Estilo Glassmorphism Premium: Layout Verde com Aura Dourada */
 .glass-card {
     background: var(--glass-premium-bg) !important;
     backdrop-filter: blur(20px) !important;
@@ -96,7 +101,7 @@ body {
                 0 0 20px rgba(212, 175, 55, 0.15) !important;
 }
 
-/* Letreiro JESUS REINA - MODIFICADO: Amarelo Neon Iluminador Avançado Tridimensional */
+/* Letreiro JESUS REINA: Amarelo Neon Iluminador Avançado Tridimensional */
 .logo {
     font-size: 3.5rem !important; 
     font-family: 'Arial Black', -apple-system, sans-serif;
@@ -152,7 +157,7 @@ input[type="text"] {
 input[type="text"]:focus {
     outline: none;
     border-color: var(--gold-premium);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
 }
 
 /* Botões */
@@ -450,7 +455,7 @@ button {
     height: var(--domino-h-hand) !important;
     border-radius: 12px !important;
 
-    /* Sombra projetada aumentada para dar forte impressão de flutuação */
+    /* Sombra projetada para dar forte impressão de flutuação */
     box-shadow: 
         0 20px 35px rgba(0, 0, 0, 0.65), 
         inset 0 3px 4px rgba(255, 255, 255, 1),
@@ -651,7 +656,7 @@ button {
 
 /* ==========================================================================
    RESPONSIVIDADE MOBILE AUTOMÁTICA E FLUIDA
-   ========================================================================== */
+   ========================================================================= */
 @media (max-width: 768px) {
     :root {
         --domino-w-table: 46px;
