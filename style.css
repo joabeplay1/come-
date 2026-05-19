@@ -437,7 +437,7 @@ button {
 }
 
 /* ==========================================================================
-   RECONSTRUÇÃO DA PEDRA PROFISSIONAL (EFEITO FLUTUANTE 3D REALISTA)
+   RECONSTRUÇÃO DA PEDRA PROFISSIONAL (REESTILIZADA, SIMÉTRICA E EM ALTA DEFINIÇÃO)
    ========================================================================== */
 .domino-piece {
     background: linear-gradient(135deg, #ffffff 0%, #fcfbfa 40%, #e8e4cb 100%) !important;
@@ -448,7 +448,7 @@ button {
     flex-direction: column !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 8px !important; /* Espaço para as bolinhas respirarem longe da borda */
+    padding: 10px 8px !important; /* Espaço recalibrado para o grid respirar */
     cursor: pointer !important;
     
     width: var(--domino-w-hand) !important;
@@ -457,22 +457,22 @@ button {
 
     /* Sombra projetada para dar forte impressão de flutuação */
     box-shadow: 
-        0 20px 35px rgba(0, 0, 0, 0.65), 
+        0 15px 30px rgba(0, 0, 0, 0.5), 
         inset 0 3px 4px rgba(255, 255, 255, 1),
-        inset 0 -4px 5px rgba(0, 0, 0, 0.15) !important;
+        inset 0 -4px 5px rgba(0, 0, 0, 0.12) !important;
     text-shadow: none !important;
     
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease !important;
     will-change: transform, box-shadow;
 }
 
 /* Efeito de elevação extrema ao passar o mouse */
 .domino-piece:hover {
-    transform: translateY(-24px) scale(1.06) rotate(-0.5deg) !important;
+    transform: translateY(-20px) scale(1.05) !important;
     border-color: var(--gold-premium) !important;
     box-shadow: 
-        0 35px 50px rgba(0, 0, 0, 0.8), 
-        0 0 25px rgba(255, 215, 0, 0.5), 
+        0 25px 40px rgba(0, 0, 0, 0.65), 
+        0 0 20px rgba(255, 215, 0, 0.4), 
         inset 0 3px 4px rgba(255, 255, 255, 1) !important;
 }
 
@@ -486,7 +486,7 @@ button {
     width: calc(100% - 12px) !important;
     height: 3px !important;
     background: linear-gradient(to right, #6b6b6b, #f0f0f0, #6b6b6b) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2) !important;
     transform: translateY(-50%) !important;
     z-index: 5 !important;
 }
@@ -502,22 +502,22 @@ button {
     background: radial-gradient(circle, #fff3bf 0%, #b38d14 100%) !important;
     border-radius: 50% !important;
     transform: translate(-50%, -50%) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
     z-index: 6 !important;
 }
 
-/* Grid 3x3 Perfeitamente Quadrado, Simétrico e Flexível */
+/* Grid das Metades - Corrigido para travar posições simétricas absolutas 3x3 */
 .domino-half {
     width: 100% !important;
-    height: 45% !important; /* Força metade exata sem invadir a área da linha divisória */
+    height: 44% !important; /* Altura exata para não amassar nem sobrepor a linha do meio */
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: repeat(3, 1fr) !important;
-    gap: 3px !important;
     justify-items: center !important;
     align-items: center !important;
     position: relative !important;
     box-sizing: border-box !important;
+    padding: 2px !important;
 }
 
 /* Bolinhas Perfeitas, Redondas e com Profundidade Real */
@@ -527,20 +527,19 @@ button {
     border-radius: 50% !important;
     display: block !important;
     /* Injeção de sombra interna 3D para parecer um furo real na pedra */
-    box-shadow: inset 1.5px 2px 3px rgba(0,0,0,0.85), 0 1px 1px rgba(255,255,255,0.6) !important;
-    transition: background-color 0.2s ease !important;
+    box-shadow: inset 1.5px 1.5px 3px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.5) !important;
 }
 
-/* Alinhamento Estrito dos Quadrantes Absolutos (Evita espalhar ou bugar no topo) */
-.dot.pos-1 { grid-area: 1 / 1 !important; justify-self: center; align-self: center; }
-.dot.pos-8 { grid-area: 1 / 2 !important; justify-self: center; align-self: center; }
-.dot.pos-2 { grid-area: 1 / 3 !important; justify-self: center; align-self: center; }
-.dot.pos-6 { grid-area: 2 / 1 !important; justify-self: center; align-self: center; }
-.dot.pos-3 { grid-area: 2 / 2 !important; justify-self: center; align-self: center; } /* Centro Absoluto */
-.dot.pos-7 { grid-area: 2 / 3 !important; justify-self: center; align-self: center; }
-.dot.pos-4 { grid-area: 3 / 1 !important; justify-self: center; align-self: center; }
-.dot.pos-9 { grid-area: 3 / 2 !important; justify-self: center; align-self: center; }
-.dot.pos-5 { grid-area: 3 / 3 !important; justify-self: center; align-self: center; }
+/* Alinhamento Estrito dos Quadrantes Absolutos (Evita desalinhamentos de ponto) */
+.dot.pos-1 { grid-area: 1 / 1 !important; }
+.dot.pos-8 { grid-area: 1 / 2 !important; }
+.dot.pos-2 { grid-area: 1 / 3 !important; }
+.dot.pos-6 { grid-area: 2 / 1 !important; }
+.dot.pos-3 { grid-area: 2 / 2 !important; } /* Centro Absoluto */
+.dot.pos-7 { grid-area: 2 / 3 !important; }
+.dot.pos-4 { grid-area: 3 / 1 !important; }
+.dot.pos-9 { grid-area: 3 / 2 !important; }
+.dot.pos-5 { grid-area: 3 / 3 !important; }
 
 /* Cores Vivas das Bolinhas */
 .dot.dot-val-1 { background-color: #1e3a8a !important; }
