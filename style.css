@@ -9,6 +9,12 @@
     --text-main: #f0f4f2;
     --text-muted: #8a9a92;
     --shadow-real: 0 20px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+
+    /* Constantes matemáticas de proporção 1:2 para pedras ampliadas profissionais */
+    --domino-w-table: 56px;
+    --domino-h-table: 112px;
+    --domino-w-hand: 66px;
+    --domino-h-hand: 132px;
 }
 
 * {
@@ -20,11 +26,13 @@
 }
 
 body {
-    background-color: var(--bg-dark);
+    /* Gradiente sutil em camadas casado com o Canvas de partículas de fundo */
+    background: radial-gradient(circle at center, #11091c 0%, #040509 100%) !important;
     color: var(--text-main);
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    position: relative;
 }
 
 /* Utilitários */
@@ -305,106 +313,146 @@ button {
    ESTILO DE PEDRA PROFISSIONAL REALISTA (DIMENSÕES AMPLIADAS PROPORCIONAIS)
    ========================================================================== */
 .domino-piece {
-    width: 62px;         /* Ajustado para 62px (Mais presença na tela) */
-    height: 110px;       /* Ajustado para 110px (Visual encorpado) */
-    background: linear-gradient(135deg, #f8f6e6 0%, #ece8cd 100%); /* Cor marfim/osso realista */
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 6px;
-    box-shadow: 
-        0 8px 16px rgba(0, 0, 0, 0.6), 
-        inset 0 2px 3px rgba(255, 255, 255, 0.8),
-        inset 0 -2px 3px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
-    position: relative;
-    border: 1px solid #dcdcdc;
+    background: linear-gradient(135deg, #fbfaf0 0%, #eae5c8 100%) !important; /* Cor marfim realista de osso */
+    border: 2px solid #dfdbbd !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 6px !important;
+    cursor: pointer !important;
+    
+    /* Proporção reativa inteligente de jogo de mesa */
+    width: var(--domino-w-hand) !important;
+    height: var(--domino-h-hand) !important;
+    border-radius: 10px !important;
+
+    /* Sombra projetada 3D suave sobre o feltro verde */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55), inset 0 2px 3px rgba(255, 255, 255, 0.8) !important;
+    text-shadow: none !important;
+    
+    /* Transições de física para animações premium sem lag */
+    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease, border-color 0.22s !important;
+    will-change: transform, box-shadow;
 }
 
-/* Efeito Hover Modernizado */
+/* Efeito Hover Premium nas suas Peças da Mão */
 .domino-piece:hover {
-    transform: translateY(-10px) scale(1.05);
+    transform: translateY(-16px) scale(1.04) rotate(-0.5deg) !important;
+    border-color: var(--gold-premium) !important;
     box-shadow: 
-        0 15px 25px rgba(0, 0, 0, 0.7), 
-        0 0 10px rgba(212, 175, 55, 0.8);
+        0 18px 32px rgba(0, 0, 0, 0.65), 
+        0 0 15px rgba(212, 175, 55, 0.4), 
+        inset 0 2px 3px rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Divisor central metálico premium */
 .domino-piece::after {
-    content: "";
-    position: absolute;
-    left: 10%;
-    top: 50%;
-    width: 80%;
-    height: 3px;
-    background: linear-gradient(to right, #808080, #bdbdbd, #808080);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
-    transform: translateY(-50%);
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    right: 4px !important;
+    top: 50% !important;
+    width: calc(100% - 8px) !important;
+    height: 3px !important;
+    background: linear-gradient(to right, #727272, #d1d1d1, #727272) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+    transform: translateY(-50%) !important;
+    z-index: 5 !important;
 }
 
 /* Pino metálico central de bronze típico de dominó de osso */
 .domino-piece::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 5px;
-    height: 5px;
-    background: radial-gradient(circle, #f3e5ab 0%, #d4af37 100%);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 1px 1px rgba(0,0,0,0.6);
-    z-index: 2;
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    width: 6px !important;
+    height: 6px !important;
+    background: radial-gradient(circle, #fcf5c9 0%, #b8931d 100%) !important;
+    border-radius: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    z-index: 6 !important;
 }
 
-/* Layout Interno dos Pontos */
+/* Layout Interno dos Pontos - GRID GEOMÉTRICO ANTI-BUG CORRIGIDO */
 .domino-half {
-    height: 40%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 3px;
-    justify-items: center;
-    align-items: center;
-    width: 100%;
+    width: 100% !important;
+    height: calc(50% - 4px) !important;
+    display: grid !important;
+    
+    /* Configuração 3x3 simétrica estável para travar posições dos pontos */
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+    gap: 1px !important;
+    justify-items: center !important;
+    align-items: center !important;
+    position: relative !important;
+    box-sizing: border-box !important;
 }
 
 /* Pontos Grandes com Relevo Interno */
 .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.4);
+    width: 9px !important;
+    height: 9px !important;
+    border-radius: 50% !important;
+    box-shadow: inset 0 1.5px 2px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.5) !important;
+    transition: background-color 0.2s ease !important;
 }
 
-/* Paleta de Cores Profissionais por Valor (Idêntico à Imagem de Referência) */
-.dot.dot-val-1 { background-color: #1e3a8a; } /* Azul */
-.dot.dot-val-2 { background-color: #15803d; } /* Verde */
-.dot.dot-val-3 { background-color: #dc2626; } /* Vermelho */
-.dot.dot-val-4 { background-color: #d97706; } /* Amarelo/Ouro */
-.dot.dot-val-5 { background-color: #9333ea; } /* Roxo */
-.dot.dot-val-6 { background-color: #111111; } /* Preto */
+/* Mapeamento estrito de posições do grid para evitar cortes laterais */
+.dot.pos-1 { grid-area: 1 / 1 !important; }
+.dot.pos-2 { grid-area: 1 / 3 !important; }
+.dot.pos-3 { grid-area: 2 / 2 !important; }
+.dot.pos-4 { grid-area: 3 / 1 !important; }
+.dot.pos-5 { grid-area: 3 / 3 !important; }
+.dot.pos-6 { grid-area: 2 / 1 !important; }
+.dot.pos-7 { grid-area: 2 / 3 !important; }
+.dot.pos-8 { grid-area: 1 / 2 !important; }
+.dot.pos-9 { grid-area: 3 / 2 !important; }
 
-/* Alinhamento de Peças na Mesa (Horizontais) - Proporção Corrigida */
+/* Paleta de Cores Profissionais por Valor (Glow Interno de Feltro) */
+.dot.dot-val-1 { background-color: #1e3a8a !important; } /* Azul */
+.dot.dot-val-2 { background-color: #15803d !important; } /* Verde */
+.dot.dot-val-3 { background-color: #dc2626 !important; } /* Vermelho */
+.dot.dot-val-4 { background-color: #d97706 !important; } /* Amarelo/Ouro */
+.dot.dot-val-5 { background-color: #9333ea !important; } /* Roxo */
+.dot.dot-val-6 { background-color: #111111 !important; } /* Preto */
+
+/* --- ESCALAS DA CORRENTE DO TABULEIRO (PEÇAS DA MESA) --- */
+.chain-container .domino-piece, 
+#domino-chain .domino-piece {
+    width: var(--domino-w-table) !important;
+    height: var(--domino-h-table) !important;
+    border-radius: 8px !important;
+    animation: dropPieceSmooth 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+.chain-container .dot, #domino-chain .dot {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+/* Alinhamento de Peças deitadas na Mesa (Horizontais) - Proporção Corrigida */
 .domino-piece.horizontal {
-    width: 110px;        /* Aumentado de forma síncrona com o tamanho vertical */
-    height: 62px;
-    flex-direction: row;
+    width: var(--domino-h-table) !important;
+    height: var(--domino-w-table) !important;
+    flex-direction: row !important;
 }
 
 .domino-piece.horizontal::after {
-    left: 50%;
-    top: 10%;
-    width: 3px;
-    height: 80%;
-    transform: translateX(-50%);
+    left: 50% !important;
+    top: 4px !important;
+    width: 3px !important;
+    height: calc(100% - 8px) !important;
+    transform: translateX(-50%) !important;
 }
 
 .domino-piece.horizontal .domino-half {
-    width: 40%;
-    height: 100%;
+    width: calc(50% - 4px) !important;
+    height: 100% !important;
 }
 
 /* Painel de Controle Inferior */
@@ -417,6 +465,7 @@ button {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    z-index: 20;
 }
 
 .opponent-hand-status {
@@ -460,17 +509,50 @@ button {
     to { transform: rotate(360deg); }
 }
 
+/* Animação Física de Impacto Suave ao Casar a Peça */
+@keyframes dropPieceSmooth {
+    0% {
+        transform: scale(1.25) translateY(-12px);
+        opacity: 0;
+        filter: blur(1px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
 /* ==========================================================================
    RESPONSIVIDADE MOBILE — ADAPTADO PARA AS NOVAS PEDRAS MAIORES
    ========================================================================== */
 @media (max-width: 768px) {
+    :root {
+        --domino-w-table: 42px;
+        --domino-h-table: 84px;
+        --domino-w-hand: 52px;
+        --domino-h-hand: 104px;
+    }
+
     .game-header { padding: 0 1rem; }
     .score-digit { font-size: 1.4rem; }
     
-    /* Peças mobile também ganham um aumento proporcional confortável */
-    .domino-piece { width: 48px; height: 86px; padding: 4px; }
-    .domino-piece.horizontal { width: 86px; height: 48px; }
+    .domino-piece { 
+        padding: 4px !important; 
+    }
     
-    .dot { width: 6px; height: 6px; }
-    .domino-piece::before { width: 3px; height: 3px; }
+    .dot { 
+        width: 6px !important; 
+        height: 6px !important; 
+    }
+    
+    .domino-piece::before { 
+        width: 4px !important; 
+        height: 4px !important; 
+    }
+    
+    .hand-container .domino-piece:hover, 
+    #my-hand .domino-piece:hover {
+        transform: translateY(-8px) scale(1.02) !important;
+    }
 }
