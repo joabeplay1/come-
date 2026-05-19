@@ -584,31 +584,6 @@ button {
     height: 100% !important;
 }
 
-/* Corrige e deita o alinhamento das pedras que girarem para a HORIZONTAL */
-.domino-piece.horizontal {
-    width: var(--domino-h-table) !important;
-    height: var(--domino-w-table) !important;
-    flex-direction: row !important;
-    align-self: center !important;
-    transform: none !important;
-    padding: 6px 8px !important;
-}
-
-/* Ajusta a linha divisória e as metades quando a pedra estiver deitada */
-.domino-piece.horizontal::after {
-    left: 50% !important;
-    top: 6px !important; 
-    bottom: 6px !important;
-    width: 3px !important; 
-    height: calc(100% - 12px) !important; 
-    transform: translateX(-50%) !important;
-    background: linear-gradient(to bottom, #6b6b6b, #f0f0f0, #6b6b6b) !important;
-}
-
-.domino-piece.horizontal .domino-half {
-    width: 50% !important;
-    height: 100% !important;
-}
 
 /* ==========================================================================
    5. CONTROLES INFERIORES & UTENSÍLIOS DE ANIMAÇÃO
