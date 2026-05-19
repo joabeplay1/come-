@@ -1,4 +1,6 @@
-/* Variáveis de Design Moderno & Glassmorphism */
+/* ==========================================================================
+   1. VARIÁVEIS DE DESIGN MODERNO & GLASSMORPHISM
+   ========================================================================== */
 :root {
     --bg-dark: #040508;
     /* Feltro reestilizado com efeito verde transparente moderno sobre o fundo */
@@ -9,7 +11,7 @@
     --purple-neon: #bd00ff;
     --green-neon: #22c55e;
     
-    /* Variáveis síncronas de Glassmorphism Avançado com refração de luz */
+    /* Variáveis síncronas de Glassmorphism Advanced com refração de luz */
     --glass-premium-bg: rgba(14, 43, 31, 0.65); /* Verde transparente luxuoso idêntico ao Lobby */
     --glass-premium-border: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%);
     
@@ -51,7 +53,11 @@ body {
     pointer-events: none !important;
 }
 
-/* Estrutura das Telas - MODIFICADO: Centralização perfeita, mas sem forçar o display flex quando for .hidden */
+/* ==========================================================================
+   2. ESTRUTURA DAS TELAS & PAINÉIS PRINCIPAIS
+   ========================================================================== */
+
+/* Estrutura das Telas - Centralização perfeita, mas sem forçar o display flex quando for .hidden */
 .screen {
     width: 100%;
     height: 100%;
@@ -325,7 +331,7 @@ button {
 }
 
 /* ==========================================================================
-   MESA ESTILO SINUCA (VISUAL CRISTALINO, SEM BLUR PARA EXIBIR PARTÍCULAS)
+   3. MESA ESTILO SINUCA & FLUXO DO JOGO
    ========================================================================== */
 .domino-table {
     display: flex;
@@ -410,35 +416,11 @@ button {
     z-index: 5; 
 }
 
-/* Corrige o alinhamento das pedras deitadas (horizontais) no feltro */
-.domino-piece.horizontal {
-    width: var(--domino-h-table) !important;
-    height: var(--domino-w-table) !important;
-    flex-direction: row !important;
-    align-self: center !important;
-    transform: none !important;
-}
-
-/* Ajusta a linha divisória e as metades quando a pedra estiver na horizontal */
-.domino-piece.horizontal::after {
-    left: 50% !important;
-    top: 6px !important; 
-    bottom: 6px !important;
-    width: 3px !important; 
-    height: calc(100% - 12px) !important; 
-    transform: translateX(-50%) !important;
-    background: linear-gradient(to bottom, #6b6b6b, #f0f0f0, #6b6b6b) !important;
-}
-
-.domino-piece.horizontal .domino-half {
-    width: 50% !important;
-    height: 100% !important;
-    display: grid !important;
-}
-
 /* ==========================================================================
-   RECONSTRUÇÃO DA PEDRA PROFISSIONAL (REESTILIZADA, SIMÉTRICA E EM ALTA DEFINIÇÃO)
+   4. RECONSTRUÇÃO DA PEDRA PROFISSIONAL (DESIGN SUPREMO, ALINHADO E 3D)
    ========================================================================== */
+
+/* Corpo Principal da Pedra (Vertical/Padrão na Mão) */
 .domino-piece {
     background: linear-gradient(135deg, #ffffff 0%, #fcfbfa 40%, #e8e4cb 100%) !important;
     border: 2px solid #dfdabe !important;
@@ -448,14 +430,14 @@ button {
     flex-direction: column !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 10px 8px !important; /* Espaço recalibrado para o grid respirar */
+    padding: 10px 8px !important; /* Calibrado para as bolinhas respirarem perfeitamente */
     cursor: pointer !important;
     
     width: var(--domino-w-hand) !important;
     height: var(--domino-h-hand) !important;
     border-radius: 12px !important;
 
-    /* Sombra projetada para dar forte impressão de flutuação */
+    /* Sombra projetada realista que simula flutuação na mão */
     box-shadow: 
         0 15px 30px rgba(0, 0, 0, 0.5), 
         inset 0 3px 4px rgba(255, 255, 255, 1),
@@ -466,7 +448,7 @@ button {
     will-change: transform, box-shadow;
 }
 
-/* Efeito de elevação extrema ao passar o mouse */
+/* Efeito de elevação premium ao passar o mouse */
 .domino-piece:hover {
     transform: translateY(-20px) scale(1.05) !important;
     border-color: var(--gold-premium) !important;
@@ -476,7 +458,7 @@ button {
         inset 0 3px 4px rgba(255, 255, 255, 1) !important;
 }
 
-/* Linha Divisória de Metal Incrustada */
+/* Linha Divisória de Metal Incrustada Centralizada */
 .domino-piece::after {
     content: "" !important;
     position: absolute !important;
@@ -506,10 +488,10 @@ button {
     z-index: 6 !important;
 }
 
-/* Grid das Metades - Corrigido para travar posições simétricas absolutas 3x3 */
+/* Grid das Metades - Travando posições simétricas absolutas 3x3 */
 .domino-half {
     width: 100% !important;
-    height: 44% !important; /* Altura exata para não amassar nem sobrepor a linha do meio */
+    height: 44% !important; /* Altura exata para não amassar nem invadir a área da linha do meio */
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: repeat(3, 1fr) !important;
@@ -520,7 +502,7 @@ button {
     padding: 2px !important;
 }
 
-/* Bolinhas Perfeitas, Redondas e com Profundidade Real */
+/* Bolinhas Redondas com Profundidade de Furo */
 .dot {
     width: 12px !important; 
     height: 12px !important;
@@ -530,7 +512,7 @@ button {
     box-shadow: inset 1.5px 1.5px 3px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.5) !important;
 }
 
-/* Alinhamento Estrito dos Quadrantes Absolutos (Evita desalinhamentos de ponto) */
+/* Alinhamento Perfeito e Estrito dos Quadrantes Absolutos (Evita desalinhamentos) */
 .dot.pos-1 { grid-area: 1 / 1 !important; }
 .dot.pos-8 { grid-area: 1 / 2 !important; }
 .dot.pos-2 { grid-area: 1 / 3 !important; }
@@ -541,7 +523,7 @@ button {
 .dot.pos-9 { grid-area: 3 / 2 !important; }
 .dot.pos-5 { grid-area: 3 / 3 !important; }
 
-/* Cores Vivas das Bolinhas */
+/* Cores Vivas e Originais das Bolinhas */
 .dot.dot-val-1 { background-color: #1e3a8a !important; }
 .dot.dot-val-2 { background-color: #15803d !important; }
 .dot.dot-val-3 { background-color: #dc2626 !important; }
@@ -549,20 +531,51 @@ button {
 .dot.dot-val-5 { background-color: #9333ea !important; }
 .dot.dot-val-6 { background-color: #111111 !important; }
 
-/* Adaptação Dinâmica das Pedras no Fluxo da Mesa */
+/* Adaptação Dinâmica das Pedras no Feltro da Mesa (Ficam ligeiramente menores) */
 .chain-container .domino-piece, 
 #domino-chain .domino-piece {
     width: var(--domino-w-table) !important;
     height: var(--domino-h-table) !important;
     border-radius: 10px !important;
+    padding: 8px 6px !important;
     animation: dropPieceSmooth 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
-/* Escalonamento dos pontos na mesa */
+/* Escalonamento proporcional das bolinhas quando as peças vão para a mesa */
 .chain-container .dot, #domino-chain .dot {
     width: 10px !important;
     height: 10px !important;
 }
+
+/* Corrige e deita o alinhamento das pedras que girarem para a HORIZONTAL */
+.domino-piece.horizontal {
+    width: var(--domino-h-table) !important;
+    height: var(--domino-w-table) !important;
+    flex-direction: row !important;
+    align-self: center !important;
+    transform: none !important;
+    padding: 6px 8px !important;
+}
+
+/* Ajusta a linha divisória e as metades quando a pedra estiver deitada */
+.domino-piece.horizontal::after {
+    left: 50% !important;
+    top: 6px !important; 
+    bottom: 6px !important;
+    width: 3px !important; 
+    height: calc(100% - 12px) !important; 
+    transform: translateX(-50%) !important;
+    background: linear-gradient(to bottom, #6b6b6b, #f0f0f0, #6b6b6b) !important;
+}
+
+.domino-piece.horizontal .domino-half {
+    width: 50% !important;
+    height: 100% !important;
+}
+
+/* ==========================================================================
+   5. CONTROLES INFERIORES & UTENSÍLIOS DE ANIMAÇÃO
+   ========================================================================== */
 
 /* Painel de Controle Inferior (Peças de Baixo da Mesa) */
 .player-panel {
@@ -625,7 +638,7 @@ button {
     to { transform: rotate(360deg); }
 }
 
-/* Animação Suave com Efeito de Impacto Tridimensional */
+/* Animação Suave com Efeito de Impacto Tridimensional ao largar na mesa */
 @keyframes dropPieceSmooth {
     0% {
         transform: scale(1.3) translateY(-25px);
@@ -653,7 +666,7 @@ button {
     text-transform: uppercase;
 }
 
-/* --- RESTAURAR TELA DE MONITORAMENTO DE JOGADORES (BARRA LATERAL) --- */
+/* --- FIXAÇÃO DA BARRAL LATERAL DE MONITORAMENTO DE JOGADORES --- */
 #lobby-screen {
     display: flex !important;
     flex-direction: row !important; /* Permite o card verde e a barra lateral ficarem lado a lado */
@@ -666,11 +679,11 @@ button {
     right: 0 !important;
     top: 0 !important;
     height: 100% !important;
-    z-index: 30 !important; /* Joga a barra de monitoramento para a frente de tudo */
+    z-index: 30 !important; /* Força a barra de monitoramento a ficar por cima e visível */
     display: block !important;
 }
 
-/* Dá um espaço para o card verde não trombar na barra em telas de PC */
+/* Dá um espaço para o card verde não trombar na barra em telas grandes de PC */
 @media (min-width: 1200px) {
     .glass-card {
         margin-right: 150px !important;
@@ -678,7 +691,7 @@ button {
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE MOBILE AUTOMÁTICA E FLUIDA
+   6. RESPONSIVIDADE MOBILE AUTOMÁTICA E FLUIDA
    ========================================================================= */
 @media (max-width: 768px) {
     :root {
@@ -702,12 +715,13 @@ button {
     }
 
     .domino-piece { 
-        padding: 5px !important; 
+        padding: 6px 4px !important; 
         border-radius: 8px !important;
     }
     
     .domino-half {
-        height: 44% !important;
+        height: 43% !important;
+        padding: 0px !important;
         gap: 1px !important;
     }
 
@@ -732,7 +746,7 @@ button {
         letter-spacing: 3px;
     }
     
-    /* Afasta as coisas no celular para não esmagar a barra */
+    /* Afasta as coisas no celular para não esmagar a barra lateral */
     .glass-card {
         margin-right: 0 !important;
     }
