@@ -654,6 +654,30 @@ button {
     text-transform: uppercase;
 }
 
+/* --- RESTAURAR TELA DE MONITORAMENTO DE JOGADORES (BARRA LATERAL) --- */
+#lobby-screen {
+    display: flex !important;
+    flex-direction: row !important; /* Permite o card verde e a barra lateral ficarem lado a lado */
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.lobby-sidebar {
+    position: absolute !important;
+    right: 0 !important;
+    top: 0 !important;
+    height: 100% !important;
+    z-index: 30 !important; /* Joga a barra de monitoramento para a frente de tudo */
+    display: block !important;
+}
+
+/* Dá um espaço para o card verde não trombar na barra em telas de PC */
+@media (min-width: 1200px) {
+    .glass-card {
+        margin-right: 150px !important;
+    }
+}
+
 /* ==========================================================================
    RESPONSIVIDADE MOBILE AUTOMÁTICA E FLUIDA
    ========================================================================= */
@@ -707,5 +731,10 @@ button {
     .jesus-reina-felt {
         font-size: 2.5rem !important;
         letter-spacing: 3px;
+    }
+    
+    /* Afasta as coisas no celular para não esmagar a barra */
+    .glass-card {
+        margin-right: 0 !important;
     }
 }
