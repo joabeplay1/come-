@@ -2,7 +2,7 @@
 :root {
     --bg-dark: #040508;
     /* Feltro reestilizado com efeito verde transparente moderno sobre o fundo */
-    --felt-green: rgba(12, 48, 30, 0.65);
+    --felt-green: rgba(12, 48, 30, 0.45); /* Reduzida a opacidade para o fundo animado aparecer melhor */
     --gold-premium: #ffd700; /* Amarelo dourado moderno e vivo */
     --gold-hover: #f3e5ab;
     --blue-neon: #00d2ff;
@@ -15,11 +15,11 @@
     
     --shadow-real: 0 25px 55px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.5);
 
-    /* MODIFICADO: Constantes de tamanho ampliadas proporcionais das pedras profissionais */
-    --domino-w-table: 64px;
-    --domino-h-table: 128px;
-    --domino-w-hand: 76px;
-    --domino-h-hand: 152px;
+    /* MODIFICADO: Proporções ampliadas perfeitas para máxima nitidez profissional */
+    --domino-w-table: 70px;  /* Largura ideal na mesa */
+    --domino-h-table: 140px; /* Altura ideal na mesa (Mantém proporção exata 1:2) */
+    --domino-w-hand: 80px;   /* Largura ideal na mão do jogador */
+    --domino-h-hand: 160px;  /* Altura ideal na mão do jogador (Mantém proporção exata 1:2) */
 }
 
 * {
@@ -302,29 +302,32 @@ button {
 }
 
 /* ==========================================================================
-   RESTAURAÇÃO DA MESA ESTILO SINUCA (HORIZONTAL, LARGA E CENTRALIZADA)
+   MESA ESTILO SINUCA (VISUAL CRISTALINO, SEM BLUR PARA EXIBIR PARTÍCULAS)
    ========================================================================== */
 .domino-table {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: calc(100vh - 235px) !important; /* Controla perfeitamente o espaço dinâmico central */
+    height: calc(100vh - 235px) !important; 
     padding: 15px;
     position: relative;
     box-sizing: border-box;
 }
 
 .table-felt {
-    width: 78vw !important;         /* Larga igual mesa de sinuca/bilhar profissional */
+    width: 78vw !important;         
     height: 100% !important;
     max-width: 1150px;
-    max-height: 450px;             /* Limita a altura para se manter horizontal elegante */
+    max-height: 450px;             
     background: var(--felt-green) !important;
-    backdrop-filter: blur(15px);   /* Efeito moderno transparente */
-    -webkit-backdrop-filter: blur(15px);
+    
+    /* MODIFICADO: Removido o blur agressivo para o fundo animado transparecer 100% */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    
     border-radius: 24px;
-    border: 3px solid rgba(0, 255, 136, 0.28) !important; /* Borda brilhante sutil */
+    border: 3px solid rgba(0, 255, 136, 0.35) !important; 
     
     display: flex;
     justify-content: center;
@@ -333,13 +336,12 @@ button {
     position: relative;
     box-sizing: border-box;
     
-    /* Brilho periférico interno e sombra projetada imponente */
     box-shadow: 
-        0 20px 50px rgba(0, 0, 0, 0.7),
-        inset 0 0 40px rgba(0, 255, 136, 0.12) !important;
+        0 20px 50px rgba(0, 0, 0, 0.75),
+        inset 0 0 50px rgba(0, 255, 136, 0.15) !important;
 }
 
-/* Container do letreiro para centralização limpa absoluta */
+/* Container do letreiro central absoluta */
 .jesus-reina-container {
     position: absolute;
     top: 50%;
@@ -348,17 +350,15 @@ button {
     text-align: center;
     pointer-events: none;
     width: 100%;
-    z-index: 1; /* Fica no fundo, por baixo do fluxo de pedras */
+    z-index: 1; 
 }
 
-/* Estilo do Letreiro Amarelo Dourado Moderno */
 .jesus-reina-felt {
     font-size: 4.2rem !important;
     font-family: 'Arial Black', -apple-system, sans-serif;
     font-weight: 900;
     letter-spacing: 5px;
     color: var(--gold-premium) !important;
-    /* Reflexos luminosos dourados e sombra preta projetada de alta definição */
     text-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 3px 3px 6px rgba(0, 0, 0, 0.85) !important;
     text-transform: uppercase;
     margin: 0;
@@ -374,17 +374,17 @@ button {
     opacity: 0.85;
 }
 
-/* --- TRAVA MECÂNICA: HORIZONTALIDADE DAS PECINHAS JOGADAS NA MESA --- */
+/* --- FLUXO DAS PECINHAS JOGADAS NA MESA --- */
 .chain-container {
     display: flex !important;
-    flex-direction: row !important; /* Fluxo das peças corre lado a lado horizontalmente */
+    flex-direction: row !important; 
     align-items: center !important; 
     justify-content: center !important;
-    gap: 8px !important;
-    width: 92%;
-    height: 85%;
+    gap: 12px !important; /* Espaçamento premium entre pedras na mesa */
+    width: 95%;
+    height: 90%;
     position: relative;
-    z-index: 5; /* Força os dominós a ficarem por cima do texto dourado */
+    z-index: 5; 
 }
 
 /* Corrige o alinhamento das pedras deitadas (horizontais) no feltro */
@@ -398,68 +398,73 @@ button {
 
 .domino-piece.horizontal::after {
     left: 50% !important;
-    top: 4px !important;
+    top: 2px !important;
     width: 3px !important;
-    height: calc(100% - 8px) !important;
+    height: calc(100% - 4px) !important;
     transform: translateX(-50%) !important;
 }
 
 .domino-piece.horizontal .domino-half {
-    width: calc(50% - 4px) !important;
+    width: 50% !important;
     height: 100% !important;
 }
 
 /* ==========================================================================
-   ESTILO DE PEDRA PROFISSIONAL REALISTA (DIMENSÕES AMPLIADAS CORRIGIDAS)
+   RECONSTRUÇÃO DA PEDRA PROFISSIONAL (EFEITO FLUTUANTE 3D REALISTA)
    ========================================================================== */
 .domino-piece {
-    background: linear-gradient(135deg, #ffffff 0%, #f6f5ea 40%, #e3dec1 100%) !important;
-    border: 2px solid #ded9b9 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #fcfbfa 40%, #e8e4cb 100%) !important;
+    border: 2px solid #dfdabe !important;
     box-sizing: border-box !important;
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 8px !important; /* Ajustado para dar respiro interno para os pontos centrais */
+    align-items: center !important;
+    padding: 8px !important; /* Espaço para as bolinhas respirarem longe da borda */
     cursor: pointer !important;
     
     width: var(--domino-w-hand) !important;
     height: var(--domino-h-hand) !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
 
+    /* MODIFICADO: Sombra projetada aumentada para dar forte impressão de flutuação */
     box-shadow: 
-        0 12px 28px rgba(0, 0, 0, 0.65), 
-        inset 0 2px 3px rgba(255, 255, 255, 0.9),
-        inset 0 -3px 4px rgba(0, 0, 0, 0.15) !important;
+        0 20px 35px rgba(0, 0, 0, 0.65), 
+        inset 0 3px 4px rgba(255, 255, 255, 1),
+        inset 0 -4px 5px rgba(0, 0, 0, 0.15) !important;
     text-shadow: none !important;
     
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease, border-color 0.25s !important;
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
     will-change: transform, box-shadow;
 }
 
+/* Efeito de elevação extrema ao passar o mouse */
 .domino-piece:hover {
-    transform: translateY(-18px) scale(1.04) rotate(-0.5deg) !important;
+    transform: translateY(-24px) scale(1.06) rotate(-0.5deg) !important;
     border-color: var(--gold-premium) !important;
     box-shadow: 
-        0 22px 40px rgba(0, 0, 0, 0.75), 
-        0 0 20px rgba(255, 215, 0, 0.45), 
-        inset 0 2px 3px rgba(255, 255, 255, 0.9) !important;
+        0 35px 50px rgba(0, 0, 0, 0.8), 
+        0 0 25px rgba(255, 215, 0, 0.5), 
+        inset 0 3px 4px rgba(255, 255, 255, 1) !important;
 }
 
+/* Linha Divisória de Metal Incrustada */
 .domino-piece::after {
     content: "" !important;
     position: absolute !important;
-    left: 4px !important;
-    right: 4px !important;
+    left: 6px !important;
+    right: 6px !important;
     top: 50% !important;
-    width: calc(100% - 8px) !important;
+    width: calc(100% - 12px) !important;
     height: 3px !important;
-    background: linear-gradient(to right, #6b6b6b, #e0e0e0, #6b6b6b) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+    background: linear-gradient(to right, #6b6b6b, #f0f0f0, #6b6b6b) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
     transform: translateY(-50%) !important;
     z-index: 5 !important;
 }
 
+/* Pino central clássico (Rivet) */
 .domino-piece::before {
     content: "" !important;
     position: absolute !important;
@@ -474,41 +479,43 @@ button {
     z-index: 6 !important;
 }
 
-/* MODIFICADO: Sistema de Grid Simétrico Estrito Anti-Falhas */
+/* MODIFICADO: Grid 3x3 Perfeitamente Quadrado, Simétrico e Flexível */
 .domino-half {
     width: 100% !important;
-    height: calc(50% - 6px) !important; /* Espaço dinâmico reajustado */
+    height: 45% !important; /* Força metade exata sem invadir a área da linha divisória */
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: repeat(3, 1fr) !important;
-    gap: 2px !important;
+    gap: 3px !important;
     justify-items: center !important;
     align-items: center !important;
     position: relative !important;
     box-sizing: border-box !important;
 }
 
-/* MODIFICADO: Ajuste e Nitidez das Bolinhas Clássicas Autênticas */
+/* MODIFICADO: Bolinhas Perfeitas, Redondas e com Profundidade Real */
 .dot {
-    width: 11px !important; /* Tamanho levemente maior, ideal para pedras profissionais */
-    height: 11px !important;
+    width: 12px !important; 
+    height: 12px !important;
     border-radius: 50% !important;
     display: block !important;
-    box-shadow: inset 0 1.5px 2px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.5) !important;
+    /* Injeção de sombra interna 3D para parecer um furo real na pedra */
+    box-shadow: inset 1.5px 2px 3px rgba(0,0,0,0.85), 0 1px 1px rgba(255,255,255,0.6) !important;
     transition: background-color 0.2s ease !important;
 }
 
-/* Trava absoluta de posicionamento simétrico em cada quadrante (Sem vazamento de bordas) */
+/* Alinhamento Estrito dos Quadrantes Absolutos (Evita espalhar ou bugar no topo) */
 .dot.pos-1 { grid-area: 1 / 1 !important; justify-self: center; align-self: center; }
 .dot.pos-8 { grid-area: 1 / 2 !important; justify-self: center; align-self: center; }
 .dot.pos-2 { grid-area: 1 / 3 !important; justify-self: center; align-self: center; }
 .dot.pos-6 { grid-area: 2 / 1 !important; justify-self: center; align-self: center; }
-.dot.pos-3 { grid-area: 2 / 2 !important; justify-self: center; align-self: center; } /* Centro perfeito */
+.dot.pos-3 { grid-area: 2 / 2 !important; justify-self: center; align-self: center; } /* Centro Absoluto */
 .dot.pos-7 { grid-area: 2 / 3 !important; justify-self: center; align-self: center; }
 .dot.pos-4 { grid-area: 3 / 1 !important; justify-self: center; align-self: center; }
 .dot.pos-9 { grid-area: 3 / 2 !important; justify-self: center; align-self: center; }
 .dot.pos-5 { grid-area: 3 / 3 !important; justify-self: center; align-self: center; }
 
+/* Cores Vivas das Bolinhas */
 .dot.dot-val-1 { background-color: #1e3a8a !important; }
 .dot.dot-val-2 { background-color: #15803d !important; }
 .dot.dot-val-3 { background-color: #dc2626 !important; }
@@ -516,18 +523,19 @@ button {
 .dot.dot-val-5 { background-color: #9333ea !important; }
 .dot.dot-val-6 { background-color: #111111 !important; }
 
+/* Adaptação Dinâmica das Pedras no Fluxo da Mesa */
 .chain-container .domino-piece, 
 #domino-chain .domino-piece {
     width: var(--domino-w-table) !important;
     height: var(--domino-h-table) !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     animation: dropPieceSmooth 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
-/* Escalonamento proporcional sutil dos pontos das pedras que já estão na mesa */
+/* Escalonamento dos pontos na mesa */
 .chain-container .dot, #domino-chain .dot {
-    width: 9px !important;
-    height: 9px !important;
+    width: 10px !important;
+    height: 10px !important;
 }
 
 /* Painel de Controle Inferior (Peças de Baixo da Mesa) */
@@ -591,16 +599,17 @@ button {
     to { transform: rotate(360deg); }
 }
 
+/* Animação Suave com Efeito de Impacto Tridimensional */
 @keyframes dropPieceSmooth {
     0% {
-        transform: scale(1.25) translateY(-12px);
+        transform: scale(1.3) translateY(-25px);
         opacity: 0;
-        filter: blur(1px);
+        box-shadow: 0 50px 40px rgba(0,0,0,0.9);
     }
     100% {
         transform: scale(1) translateY(0);
         opacity: 1;
-        filter: blur(0);
+        box-shadow: 0 15px 25px rgba(0,0,0,0.55);
     }
 }
 
@@ -619,14 +628,14 @@ button {
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE MOBILE — COMPATÍVEL COM LAYOUT DEITADO
+   RESPONSIVIDADE MOBILE AUTOMÁTICA E FLUIDA
    ========================================================================== */
 @media (max-width: 768px) {
     :root {
-        --domino-w-table: 42px;
-        --domino-h-table: 84px;
-        --domino-w-hand: 52px;
-        --domino-h-hand: 104px;
+        --domino-w-table: 46px;
+        --domino-h-table: 92px;
+        --domino-w-hand: 56px;
+        --domino-h-hand: 112px;
     }
 
     .game-header { padding: 0 1rem; height: 65px; }
@@ -638,22 +647,24 @@ button {
     }
 
     .table-felt {
-        width: 94vw !important;
+        width: 95vw !important;
         max-height: 320px;
     }
 
     .domino-piece { 
-        padding: 4px !important; 
+        padding: 5px !important; 
+        border-radius: 8px !important;
     }
     
     .domino-half {
-        height: calc(50% - 4px) !important;
+        height: 44% !important;
         gap: 1px !important;
     }
 
     .dot { 
-        width: 6.5px !important; 
-        height: 6.5px !important; 
+        width: 7.5px !important; 
+        height: 7.5px !important; 
+        box-shadow: inset 1px 1px 2px rgba(0,0,0,0.8) !important;
     }
     
     .domino-piece::before { 
@@ -663,15 +674,11 @@ button {
     
     .hand-container .domino-piece:hover, 
     #my-hand .domino-piece:hover {
-        transform: translateY(-8px) scale(1.02) !important;
+        transform: translateY(-10px) scale(1.02) !important;
     }
 
     .jesus-reina-felt {
         font-size: 2.5rem !important;
         letter-spacing: 3px;
-    }
-    
-    .jesus-reina-banner {
-        font-size: 1.4rem;
     }
 }
