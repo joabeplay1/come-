@@ -1,14 +1,21 @@
-/* Variáveis de Design Moderno & Glassmorphism */
+/* ==========================================================================
+   SUÍTE PREMIUM EVOLVED: GRAPHICS & NEON LUXURY INTERFACE (ANTI-BUG)
+   ========================================================================== */
 :root {
-    --bg-dark: #0a0f0d;
-    --felt-green: radial-gradient(circle, #143d28 0%, #0b2216 100%);
+    --bg-dark: #040508;
+    /* Feltro reestilizado: Injeção de iluminação periférica interna e profundidade */
+    --felt-green: radial-gradient(circle at center, #164e33 0%, #0d2f1e 50%, #05140d 100%);
     --gold-premium: #d4af37;
     --gold-hover: #f3e5ab;
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --text-main: #f0f4f2;
-    --text-muted: #8a9a92;
-    --shadow-real: 0 20px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+    --blue-neon: #00d2ff;
+    --purple-neon: #bd00ff;
+    --green-neon: #22c55e;
+    
+    /* Variáveis síncronas de Glassmorphism Avançado com refração de luz */
+    --glass-premium-bg: rgba(10, 15, 13, 0.65);
+    --glass-premium-border: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%);
+    
+    --shadow-real: 0 25px 55px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.5);
 
     /* Constantes matemáticas de proporção 1:2 para pedras ampliadas profissionais */
     --domino-w-table: 56px;
@@ -25,9 +32,12 @@
     user-select: none;
 }
 
+/* --- FUNDO ULTRA VIVO E ILUMINADO COM ADAPTAÇÃO AO CANVAS --- */
 body {
-    /* Gradiente sutil em camadas casado com o Canvas de partículas de fundo */
-    background: radial-gradient(circle at center, #11091c 0%, #040509 100%) !important;
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(189, 0, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at center, #120b24 0%, #040509 100%) !important;
     color: var(--text-main);
     overflow: hidden;
     height: 100vh;
@@ -65,10 +75,11 @@ body {
 
 /* Estilo Glassmorphism Premium */
 .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--glass-premium-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-image: var(--glass-premium-border) 1;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border-radius: 24px;
     padding: 3rem;
     width: 90%;
@@ -82,12 +93,12 @@ body {
     font-weight: 900;
     letter-spacing: 2px;
     margin-bottom: 0.5rem;
-    color: var(--text-main);
+    color: #fff;
 }
 
 .logo span {
     color: var(--gold-premium);
-    text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 18px rgba(212, 175, 55, 0.5);
 }
 
 .subtitle {
@@ -105,7 +116,7 @@ body {
 .input-group label {
     display: block;
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: #8a9a92;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -113,26 +124,26 @@ body {
 
 input[type="text"] {
     width: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 1rem;
     color: #fff;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 input[type="text"]:focus {
     outline: none;
     border-color: var(--gold-premium);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
 }
 
 /* Botões */
 button {
     cursor: pointer;
     border: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .btn-primary {
@@ -143,25 +154,27 @@ button {
     padding: 1rem;
     border-radius: 12px;
     font-size: 1rem;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55);
 }
 
 .btn-secondary {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f0f4f2;
     padding: 1rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;
+    backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--gold-premium);
     color: #fff;
 }
 
@@ -175,7 +188,7 @@ button {
     margin: 1.5rem 0;
     display: flex;
     align-items: center;
-    color: var(--text-muted);
+    color: #8a9a92;
     font-size: 0.8rem;
 }
 
@@ -183,7 +196,7 @@ button {
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--glass-border);
+    background: rgba(255, 255, 255, 0.08);
     margin: 0 10px;
 }
 
@@ -194,12 +207,13 @@ button {
     letter-spacing: 5px;
     margin: 1.5rem 0;
     color: var(--gold-premium);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
 .btn-small {
     background: rgba(255,255,255,0.05);
-    border: 1px solid var(--glass-border);
-    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f0f4f2;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -207,6 +221,7 @@ button {
 
 .btn-small:hover {
     background: rgba(255,255,255,0.15);
+    border-color: var(--gold-premium);
 }
 
 .status-container {
@@ -218,26 +233,24 @@ button {
 }
 
 #waiting-status {
-    color: var(--text-muted);
+    color: #8a9a92;
     font-size: 0.9rem;
 }
 
-/* Mesa de Jogo (Feltro Profissional) */
-#game-screen {
-    flex-direction: column;
-    justify-content: space-between;
-}
-
+/* --- PLACAR SUPERIOR GLASS-NEON AVANÇADO --- */
 .game-header {
     width: 100%;
-    height: 70px;
-    background: rgba(0,0,0,0.85);
-    border-bottom: 1px solid var(--glass-border);
+    height: 75px;
+    background: rgba(4, 5, 8, 0.4) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
     z-index: 20;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .player-score {
@@ -246,66 +259,90 @@ button {
     gap: 1rem;
 }
 
+/* Tipografia de textos institucionais e metadados */
 .player-name-tag {
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
+/* Marcador numérico com efeito Neon Dourado */
 .score-digit {
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-size: 1.9rem;
+    font-weight: 900;
     color: var(--gold-premium);
-    background: #000;
-    padding: 0.2rem 0.8rem;
-    border-radius: 6px;
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(0, 0, 0, 0.7) !important;
+    padding: 0.15rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.4) !important;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+    font-family: 'Courier New', Courier, monospace; /* Estilo tecnológico numérico */
 }
 
 .match-info {
     text-align: center;
 }
 
+/* Tipografia de Turnos Avançada */
 #turn-indicator {
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 2px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #fff, #bfbfbf, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 #pool-info {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--gold-premium);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
 .domino-table {
     flex: 1;
     width: 100%;
-    background: #111;
-    padding: 15px;
+    background: transparent !important; /* Libera visualização das partículas do fundo */
+    padding: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
+/* --- MESA PRINCIPAL COM GLOW PERIFÉRICO AZUL E VERDE NEON --- */
 .table-felt {
     width: 100%;
     height: 100%;
-    background: var(--felt-green);
-    border-radius: 16px;
-    box-shadow: inset 0 0 80px rgba(0,0,0,0.9), var(--shadow-real);
-    border: 8px solid #22140a;
+    background: var(--felt-green) !important;
+    border-radius: 20px;
+    border: 10px solid #1a0f07 !important;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: auto;
+    position: relative;
+    
+    /* Duplo Neon Aura: Verde Dinâmico Interno + Vazamento de Luz Azul sutil externo */
+    box-shadow: 
+        inset 0 0 100px rgba(0, 0, 0, 0.95),
+        0 0 45px rgba(34, 197, 94, 0.15),
+        0 0 90px rgba(0, 210, 255, 0.1) !important;
 }
 
 /* Corrente de Dominós na Mesa */
 .chain-container {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 40px;
+    gap: 14px;
+    padding: 50px;
     min-width: max-content;
 }
 
@@ -313,8 +350,8 @@ button {
    ESTILO DE PEDRA PROFISSIONAL REALISTA (DIMENSÕES AMPLIADAS PROPORCIONAIS)
    ========================================================================== */
 .domino-piece {
-    background: linear-gradient(135deg, #fbfaf0 0%, #eae5c8 100%) !important; /* Cor marfim realista de osso */
-    border: 2px solid #dfdbbd !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f6f5ea 40%, #e3dec1 100%) !important; /* Marfim com variação de faces realistas */
+    border: 2px solid #ded9b9 !important;
     box-sizing: border-box !important;
     position: relative !important;
     display: flex !important;
@@ -323,27 +360,30 @@ button {
     padding: 6px !important;
     cursor: pointer !important;
     
-    /* Proporção reativa inteligente de jogo de mesa */
+    /* Proporção síncrona fixa 1:2 de engenharia física */
     width: var(--domino-w-hand) !important;
     height: var(--domino-h-hand) !important;
     border-radius: 10px !important;
 
-    /* Sombra projetada 3D suave sobre o feltro verde */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55), inset 0 2px 3px rgba(255, 255, 255, 0.8) !important;
+    /* Sombreamento Oclusivo e Iluminação Interna Realista */
+    box-shadow: 
+        0 12px 28px rgba(0, 0, 0, 0.65), 
+        inset 0 2px 3px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 4px rgba(0, 0, 0, 0.15) !important;
     text-shadow: none !important;
     
-    /* Transições de física para animações premium sem lag */
-    transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease, border-color 0.22s !important;
+    /* Animações fluidas de movimentação */
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease, border-color 0.25s !important;
     will-change: transform, box-shadow;
 }
 
-/* Efeito Hover Premium nas suas Peças da Mão */
+/* Efeito Hover Estilo Cassino Gamer de Alta Performance */
 .domino-piece:hover {
-    transform: translateY(-16px) scale(1.04) rotate(-0.5deg) !important;
+    transform: translateY(-18px) scale(1.04) rotate(-0.5deg) !important;
     border-color: var(--gold-premium) !important;
     box-shadow: 
-        0 18px 32px rgba(0, 0, 0, 0.65), 
-        0 0 15px rgba(212, 175, 55, 0.4), 
+        0 22px 40px rgba(0, 0, 0, 0.75), 
+        0 0 20px rgba(212, 175, 55, 0.45), 
         inset 0 2px 3px rgba(255, 255, 255, 0.9) !important;
 }
 
@@ -356,7 +396,7 @@ button {
     top: 50% !important;
     width: calc(100% - 8px) !important;
     height: 3px !important;
-    background: linear-gradient(to right, #727272, #d1d1d1, #727272) !important;
+    background: linear-gradient(to right, #6b6b6b, #e0e0e0, #6b6b6b) !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4) !important;
     transform: translateY(-50%) !important;
     z-index: 5 !important;
@@ -370,7 +410,7 @@ button {
     top: 50% !important;
     width: 6px !important;
     height: 6px !important;
-    background: radial-gradient(circle, #fcf5c9 0%, #b8931d 100%) !important;
+    background: radial-gradient(circle, #fff3bf 0%, #b38d14 100%) !important;
     border-radius: 50% !important;
     transform: translate(-50%, -50%) !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
@@ -382,8 +422,6 @@ button {
     width: 100% !important;
     height: calc(50% - 4px) !important;
     display: grid !important;
-    
-    /* Configuração 3x3 simétrica estável para travar posições dos pontos */
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: repeat(3, 1fr) !important;
     gap: 1px !important;
@@ -413,7 +451,7 @@ button {
 .dot.pos-8 { grid-area: 1 / 2 !important; }
 .dot.pos-9 { grid-area: 3 / 2 !important; }
 
-/* Paleta de Cores Profissionais por Valor (Glow Interno de Feltro) */
+/* Paleta de Cores Profissionais por Valor */
 .dot.dot-val-1 { background-color: #1e3a8a !important; } /* Azul */
 .dot.dot-val-2 { background-color: #15803d !important; } /* Verde */
 .dot.dot-val-3 { background-color: #dc2626 !important; } /* Vermelho */
@@ -421,7 +459,7 @@ button {
 .dot.dot-val-5 { background-color: #9333ea !important; } /* Roxo */
 .dot.dot-val-6 { background-color: #111111 !important; } /* Preto */
 
-/* --- ESCALAS DA CORRENTE DO TABULEIRO (PEÇAS DA MESA) --- */
+/* --- ESCASAS DA CORRENTE DO TABULEIRO (PEÇAS DA MESA) --- */
 .chain-container .domino-piece, 
 #domino-chain .domino-piece {
     width: var(--domino-w-table) !important;
@@ -455,22 +493,26 @@ button {
     height: 100% !important;
 }
 
-/* Painel de Controle Inferior */
+/* Painel de Controle Inferior - Estilo Transparente Sutil */
 .player-panel {
     width: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    border-top: 1px solid var(--glass-border);
+    background: rgba(4, 5, 8, 0.6) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
     padding: 1rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     z-index: 20;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .opponent-hand-status {
     color: var(--text-muted);
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .hand-container {
@@ -482,17 +524,20 @@ button {
 }
 
 .btn-action {
-    background: #1a1a1a;
+    background: rgba(0, 0, 0, 0.4);
     border: 1px solid var(--gold-premium);
     color: var(--gold-premium);
     padding: 0.6rem 1.5rem;
     border-radius: 8px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
 }
 
 .btn-action:hover {
     background: var(--gold-premium);
     color: #000;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
 .spinner {
@@ -534,7 +579,7 @@ button {
         --domino-h-hand: 104px;
     }
 
-    .game-header { padding: 0 1rem; }
+    .game-header { padding: 0 1rem; height: 65px; }
     .score-digit { font-size: 1.4rem; }
     
     .domino-piece { 
