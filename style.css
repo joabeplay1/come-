@@ -10,12 +10,12 @@
     --green-neon: #22c55e;
     
     /* Variáveis síncronas de Glassmorphism Avançado com refração de luz */
-    --glass-premium-bg: rgba(10, 15, 13, 0.65);
+    --glass-premium-bg: rgba(14, 43, 31, 0.65); /* Verde transparente luxuoso idêntico ao Lobby */
     --glass-premium-border: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%);
     
     --shadow-real: 0 25px 55px rgba(0,0,0,0.85), 0 8px 16px rgba(0,0,0,0.5);
 
-    /* MODIFICADO: Proporções ampliadas perfeitas para máxima nitidez profissional */
+    /* Constantes de tamanho ampliadas proporcionais das pedras profissionais */
     --domino-w-table: 70px;  /* Largura ideal na mesa */
     --domino-h-table: 140px; /* Altura ideal na mesa (Mantém proporção exata 1:2) */
     --domino-w-hand: 80px;   /* Largura ideal na mão do jogador */
@@ -46,17 +46,24 @@ body {
 /* Utilitários */
 .hidden { display: none !important; }
 
-/* Estrutura das Telas */
+/* Estrutura das Telas - MODIFICADO: Centralização absoluta e rigorosa de todas as telas */
 .screen {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important; /* Alinha o card no meio verticalmente */
+    align-items: center !important;     /* Alinha o card no meio horizontalmente */
     position: absolute;
     top: 0;
     left: 0;
     z-index: 10;
+    box-sizing: border-box;
+}
+
+/* Trava mecânica para a tela de jogo não concentrar tudo no meio e esmagar o tabuleiro */
+#game-screen {
+    justify-content: space-between !important;
 }
 
 /* Telas de Transição / Overlay */
@@ -71,32 +78,43 @@ body {
     transition: opacity 0.5s ease;
 }
 
-/* Estilo Glassmorphism Premium */
+/* Estilo Glassmorphism Premium MODIFICADO: Layout Verde com Aura Dourada */
 .glass-card {
-    background: var(--glass-premium-bg);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-image: var(--glass-premium-border) 1;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-radius: 24px;
+    background: var(--glass-premium-bg) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: 24px !important;
     padding: 3rem;
     width: 90%;
     max-width: 480px;
-    box-shadow: var(--shadow-real);
     text-align: center;
+    z-index: 15;
+    
+    /* Borda dourada fina com efeito de brilho suave periférico */
+    border: 2px solid rgba(212, 175, 55, 0.4) !important; 
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.85), 
+                0 0 20px rgba(212, 175, 55, 0.15) !important;
 }
 
+/* Letreiro JESUS REINA - MODIFICADO: Amarelo Neon Iluminador Avançado Tridimensional */
 .logo {
-    font-size: 2.5rem;
+    font-size: 3.5rem !important; 
+    font-family: 'Arial Black', -apple-system, sans-serif;
     font-weight: 900;
-    letter-spacing: 2px;
-    margin-bottom: 0.5rem;
-    color: #fff;
-}
-
-.logo span {
-    color: var(--gold-premium);
-    text-shadow: 0 0 18px rgba(255, 215, 0, 0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 2rem; 
+    
+    /* Tom amarelo solar forte e vibrante */
+    color: #ffea4a !important; 
+    
+    /* Camadas acesas simulando projeção de filamento luminoso e sombra de leitura */
+    text-shadow: 
+        0 0 6px rgba(255, 220, 0, 0.8),   
+        0 0 15px rgba(255, 210, 0, 0.6),  
+        0 0 30px rgba(255, 170, 0, 0.4),  
+        3px 4px 6px rgba(0, 0, 0, 0.9) !important;
 }
 
 .subtitle {
@@ -322,7 +340,7 @@ button {
     max-height: 450px;             
     background: var(--felt-green) !important;
     
-    /* MODIFICADO: Removido o blur agressivo para o fundo animado transparecer 100% */
+    /* Removido o blur agressivo para o fundo animado transparecer 100% */
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     
@@ -412,6 +430,7 @@ button {
     height: 100% !important;
     display: grid !important;
 }
+
 /* ==========================================================================
    RECONSTRUÇÃO DA PEDRA PROFISSIONAL (EFEITO FLUTUANTE 3D REALISTA)
    ========================================================================== */
@@ -431,7 +450,7 @@ button {
     height: var(--domino-h-hand) !important;
     border-radius: 12px !important;
 
-    /* MODIFICADO: Sombra projetada aumentada para dar forte impressão de flutuação */
+    /* Sombra projetada aumentada para dar forte impressão de flutuação */
     box-shadow: 
         0 20px 35px rgba(0, 0, 0, 0.65), 
         inset 0 3px 4px rgba(255, 255, 255, 1),
@@ -482,7 +501,7 @@ button {
     z-index: 6 !important;
 }
 
-/* MODIFICADO: Grid 3x3 Perfeitamente Quadrado, Simétrico e Flexível */
+/* Grid 3x3 Perfeitamente Quadrado, Simétrico e Flexível */
 .domino-half {
     width: 100% !important;
     height: 45% !important; /* Força metade exata sem invadir a área da linha divisória */
@@ -496,7 +515,7 @@ button {
     box-sizing: border-box !important;
 }
 
-/* MODIFICADO: Bolinhas Perfeitas, Redondas e com Profundidade Real */
+/* Bolinhas Perfeitas, Redondas e com Profundidade Real */
 .dot {
     width: 12px !important; 
     height: 12px !important;
