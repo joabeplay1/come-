@@ -9,9 +9,11 @@
     --text-main: #f0f4f2;
     --text-muted: #8a9a92;
 
-    /* Proporções dinâmicas das pedras */
-    --domino-w-table: 54px;
-    --domino-h-table: 108px;
+    /* Tamanhos das pedras da mesa (DEITADAS: largura maior que a altura) */
+    --domino-w-table: 108px;
+    --domino-h-table: 54px;
+    
+    /* Tamanhos das pedras na Mão (EM PÉ: altura maior que a largura) */
     --domino-w-hand: 64px;
     --domino-h-hand: 128px;
 }
@@ -123,12 +125,10 @@ button { cursor: pointer; border: none; transition: all 0.2s ease; }
 .code-display { font-size: 2.2rem; font-weight: bold; letter-spacing: 5px; margin: 1.5rem 0; color: var(--gold-premium); }
 .btn-small { background: rgba(255,255,255,0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #f0f4f2; padding: 0.5rem 1rem; border-radius: 8px; }
 
-/* Ocultação Segura da Sidebar dentro da Partida */
 #game-screen:not(.hidden) ~ #lobby-presence-sidebar {
     display: none !important;
 }
 
-/* --- MONTAGEM DA MESA GRANDE ORIGINAL --- */
 .game-header {
     width: 100%;
     height: 75px;
@@ -151,60 +151,106 @@ button { cursor: pointer; border: none; transition: all 0.2s ease; }
     border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
+/* ==========================================================================
+   DESIGN DA MESA HORIZONTAL ESTILO SINUCA
+   ========================================================================== */
 .domino-table {
     flex: 1;
     width: 100%;
-    height: calc(100vh - 220px) !important;
-    padding: 12px;
+    height: calc(100vh - 230px) !important;
+    padding: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .table-felt {
-    width: 98% !important;
-    height: 98% !important;
+    width: 96% !important;   /* Proporção horizontal esticada de sinuca */
+    height: 90% !important;  /* Achata levemente para criar o visual deitado */
     background: var(--felt-green) !important;
     border-radius: 20px;
-    border: 10px solid #1a0f07 !important;
+    border: 12px solid #1a0f07 !important; /* Borda robusta de madeira */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: auto;
     position: relative;
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 0 45px rgba(34, 197, 94, 0.15);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 0 45px rgba(34, 197, 94, 0.2);
 }
 
+/* Alinhamento da corrente horizontal de peças deitadas */
 .chain-container {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
-    padding: 60px;
+    padding: 40px;
     min-width: max-content;
     z-index: 10;
 }
 
 /* ==========================================================================
-   ANATOMIA CLÁSSICA DO DOMINÓ: MARFIM + BOLINHAS PRETAS (ANTI-BUG)
+   ANATOMIA DAS PEÇAS (MESA = DEITADA | MÃO = EM PÉ)
    ========================================================================== */
+
+/* Estilo Base Clássico de Osso */
 .domino-piece {
-    background: linear-gradient(135deg, #ffffff 0%, #f6f6f6 100%) !important; /* Branco/Marfim Clássico Nítido */
+    background: linear-gradient(135deg, #ffffff 0%, #f6f6f6 100%) !important;
     border: 2px solid #d1d5db !important;
     box-sizing: border-box !important;
     position: relative !important;
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    padding: 6px !important;
-    width: var(--domino-w-hand) !important;
-    height: var(--domino-h-hand) !important;
     border-radius: 8px !important;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+    cursor: pointer !important;
 }
 
-/* Divisor Metálico do Dominó de Osso */
-.domino-piece::after {
+/* --- AS PEÇAS DENTRO DA MESA (DEITADAS AUTOMATICAMENTE) --- */
+.chain-container .domino-piece, 
+#domino-chain .domino-piece {
+    width: var(--domino-w-table) !important;
+    height: var(--domino-h-table) !important;
+    flex-direction: row !important; /* Lados ficam um na esquerda e outro na direita */
+}
+
+/* Linha divisória vertical para a peça deitada da mesa */
+.chain-container .domino-piece::after,
+#domino-chain .domino-piece::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 4px !important;
+    bottom: 4px !important;
+    left: 50% !important;
+    width: 3px !important;
+    height: calc(100% - 8px) !important;
+    background: linear-gradient(to bottom, #4b5563, #9ca3af, #4b5563) !important;
+    transform: translateX(-50%) !important;
+    z-index: 5 !important;
+}
+
+/* Ajuste dos quadrantes internos na mesa */
+.chain-container .domino-half,
+#domino-chain .domino-half {
+    width: calc(50% - 4px) !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+}
+
+/* --- AS PEÇAS NA MÃO DO JOGADOR (MANTIDAS EM PÉ) --- */
+.hand-container .domino-piece, 
+#my-hand .domino-piece {
+    width: var(--domino-w-hand) !important;
+    height: var(--domino-h-hand) !important;
+    flex-direction: column !important; /* Lados ficam um em cima e outro embaixo */
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Linha divisória horizontal para a peça em pé da mão */
+.hand-container .domino-piece::after,
+#my-hand .domino-piece::after {
     content: "" !important;
     position: absolute !important;
     left: 4px !important;
@@ -216,7 +262,24 @@ button { cursor: pointer; border: none; transition: all 0.2s ease; }
     z-index: 5 !important;
 }
 
-/* Pino Central de Bronze */
+/* Ajuste dos quadrantes internos na mão */
+.hand-container .domino-half,
+#my-hand .domino-half {
+    width: 100% !important;
+    height: calc(50% - 4px) !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+}
+
+/* Efeito Hover na mão */
+.hand-container .domino-piece:hover, 
+#my-hand .domino-piece:hover {
+    transform: translateY(-15px) scale(1.05) !important;
+    box-shadow: 0 15px 25px rgba(212, 175, 55, 0.4) !important;
+}
+
+/* Pino Central de Bronze (Comum para todas) */
 .domino-piece::before {
     content: "" !important;
     position: absolute !important;
@@ -230,62 +293,47 @@ button { cursor: pointer; border: none; transition: all 0.2s ease; }
     z-index: 6 !important;
 }
 
-/* Grid de Quadrantes Internos */
-.domino-half {
-    width: 100% !important;
-    height: calc(50% - 4px) !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    grid-template-rows: repeat(3, 1fr) !important;
-    justify-items: center !important;
-    align-items: center !important;
-}
-
-/* Bolinhas Pretas Super Nítidas */
+/* Bolinhas Pretas (Comum para todas) */
 .dot {
     width: 9px !important;
     height: 9px !important;
     border-radius: 50% !important;
-    background-color: #111827 !important; /* Totalmente Preta Clássica */
+    background-color: #111827 !important;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.8) !important;
 }
 
-/* Alinhamento de Peças Jogadas na Horizontal */
-.domino-piece.horizontal {
-    width: var(--domino-h-table) !important;
-    height: var(--domino-w-table) !important;
-    flex-direction: row !important;
-}
-.domino-piece.horizontal::after {
-    left: 50% !important;
-    top: 4px !important;
-    width: 3px !important;
-    height: calc(100% - 8px) !important;
-    transform: translateX(-50%) !important;
-}
-.domino-piece.horizontal .domino-half {
-    width: calc(50% - 4px) !important;
-    height: 100% !important;
-}
+/* Grid de Posições fixas das Bolinhas */
+.dot.pos-1 { grid-area: 1 / 1 !important; }
+.dot.pos-2 { grid-area: 1 / 3 !important; }
+.dot.pos-3 { grid-area: 2 / 2 !important; }
+.dot.pos-4 { grid-area: 3 / 1 !important; }
+.dot.pos-5 { grid-area: 3 / 3 !important; }
+.dot.pos-6 { grid-area: 2 / 1 !important; }
+.dot.pos-7 { grid-area: 2 / 3 !important; }
+.dot.pos-8 { grid-area: 1 / 2 !important; }
+.dot.pos-9 { grid-area: 3 / 2 !important; }
 
-.chain-container .domino-piece, #domino-chain .domino-piece {
-    width: var(--domino-w-table) !important;
-    height: var(--domino-h-table) !important;
-}
-
-.player-panel { width: 100%; background: rgba(4, 5, 8, 0.8); backdrop-filter: blur(25px); padding: 1rem 2rem; display: flex; flex-direction: column; align-items: center; z-index: 20; }
-.hand-container { display: flex; gap: 16px; padding: 15px 0; max-width: 100%; overflow-x: auto; }
+/* Painel do Jogador Inferior */
+.player-panel { width: 100%; background: rgba(4, 5, 8, 0.8); backdrop-filter: blur(25px); padding: 0.8rem 2rem; display: flex; flex-direction: column; align-items: center; z-index: 20; }
+.hand-container { display: flex; gap: 16px; padding: 10px 0; max-width: 100%; overflow-x: auto; }
 
 /* LETREIROS "JESUS REINA" */
 .jesus-reina-banner { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; font-weight: 900; color: var(--gold-premium); text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); text-transform: uppercase; }
-.jesus-reina-felt { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; font-weight: 900; color: rgba(212, 175, 55, 0.15) !important; text-shadow: 0 0 25px rgba(212, 175, 55, 0.2); text-transform: uppercase; pointer-events: none; z-index: 1; }
+.jesus-reina-felt { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; font-weight: 900; color: rgba(212, 175, 55, 0.12) !important; text-shadow: 0 0 25px rgba(212, 175, 55, 0.2); text-transform: uppercase; pointer-events: none; z-index: 1; }
 
 .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--gold-premium); border-radius: 50%; animation: spin 1s linear infinite; margin: 1.5rem auto 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Ajustes Mobile */
 @media (max-width: 768px) {
-    :root { --domino-w-table: 42px; --domino-h-table: 84px; --domino-w-hand: 52px; --domino-h-hand: 104px; }
-    .domino-table { height: calc(100vh - 180px) !important; }
+    :root { 
+        --domino-w-table: 76px; 
+        --domino-h-table: 38px; 
+        --domino-w-hand: 46px; 
+        --domino-h-hand: 92px; 
+    }
+    .domino-table { height: calc(100vh - 180px) !important; padding: 5px; }
+    .table-felt { width: 99% !important; height: 95% !important; border: 6px solid #1a0f07 !important; }
     .dot { width: 6px !important; height: 6px !important; }
     .jesus-reina-felt { font-size: 2.2rem; }
 }
